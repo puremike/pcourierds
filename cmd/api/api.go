@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"errors"
+	"fmt"
 	"net/http"
 	"os"
 	"os/signal"
@@ -11,6 +12,7 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+	httpSwagger "github.com/swaggo/http-swagger"
 	"go.uber.org/zap"
 )
 
@@ -36,6 +38,8 @@ func (app *app) mount() http.Handler {
 
 	r.Route("/v1", func(r chi.Router) {
 		r.Get("/health", app.health)
+		docURL := fmt.Sprintf("%s/swagger/doc.json", app.config.port)
+		r.Get("/swagger/*", httpSwagger.Handler(httpSwagger.URL(docURL)))
 	})
 
 	return r

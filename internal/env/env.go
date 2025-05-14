@@ -8,7 +8,7 @@ import (
 )
 
 type EnvConfig struct {
-	PORT, DB_ADDR, ENV string
+	PORT, DB_ADDR, ENV, SWAGGER_PORT string
 }
 
 func GetEnv() *EnvConfig {
