@@ -22,7 +22,7 @@ func readJSON(w http.ResponseWriter, r *http.Request, data any) error {
 	return decoder.Decode(data)
 }
 
-func (app *app) writeJSON(w http.ResponseWriter, status int, data any) error {
+func (app *application) writeJSON(w http.ResponseWriter, status int, data any) error {
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)
@@ -30,14 +30,14 @@ func (app *app) writeJSON(w http.ResponseWriter, status int, data any) error {
 	return encoder.Encode(data)
 }
 
-func (app *app) writeJSONErr(w http.ResponseWriter, status int, data any) error {
+func (app *application) writeJSONErr(w http.ResponseWriter, status int, data any) error {
 	type errEnv struct {
 		Error any `json:"error"`
 	}
 	return app.writeJSON(w, status, &errEnv{Error: data})
 }
 
-func (app *app) jsonResponse(w http.ResponseWriter, status int, data any) error {
+func (app *application) jsonResponse(w http.ResponseWriter, status int, data any) error {
 	type jsonEnv struct {
 		Data any `json:"data"`
 	}

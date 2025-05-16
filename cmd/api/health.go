@@ -10,14 +10,15 @@ type healthResponse struct {
 }
 
 // HealthCheck godoc
-//  @Summary		Get health
-//	@Description	Returns the status of the application
-//	@Tags			health
-//	@Accept			json
-//	@Produce		json
-//	@Success		200	{object}	healthResponse
-//	@Router			/health [get]
-func (app *app) health(w http.ResponseWriter, r *http.Request) {
+//
+//	 @Summary		Get health
+//		@Description	Returns the status of the application
+//		@Tags			health
+//		@Accept			json
+//		@Produce		json
+//		@Success		200	{object}	healthResponse
+//		@Router			/health [get]
+func (app *application) health(w http.ResponseWriter, r *http.Request) {
 
 	healthStr := healthResponse{
 		Status:      "Ok",

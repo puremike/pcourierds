@@ -3,38 +3,39 @@ package env
 import (
 	"log"
 	"os"
+	"strconv"
+	"time"
 
 	"github.com/joho/godotenv"
 )
 
-type EnvConfig struct {
-	PORT, DB_ADDR, ENV, SWAGGER_PORT string
+func init() {
+	if err := godotenv.Load(); err != nil {
+		log.Println("No .env file found")
+	}
 }
 
-func GetEnv() *EnvConfig {
-
-	if err := godotenv.Load(".env"); err != nil {
-		log.Fatal("Error loading .env file")
+func GetEnvInt(key string, defaultValue int) int {
+	if value, exists := os.LookupEnv(key); exists {
+		if intValue, err := strconv.Atoi(value); err == nil {
+			return intValue
+		}
 	}
+	return defaultValue
+}
 
-	port := os.Getenv(":PORT")
-	if port == "" {
-		port = ":5100"
+func GetEnvString(key, defaultValue string) string {
+	if value, exists := os.LookupEnv(key); exists {
+		return value
 	}
+	return defaultValue
+}
 
-	db_addr := os.Getenv("DB_ADDR")
-	if db_addr == "" {
-		log.Fatal("DB_ADDR is not set")
+func GetEnvTDuration(key string, defaultValue time.Duration) time.Duration {
+	if value, exists := os.LookupEnv(key); exists {
+		if valueTD, err := time.ParseDuration(value); err == nil {
+			return valueTD
+		}
 	}
-
-	env := os.Getenv("ENV")
-	if env == "" {
-		env = "development"
-	}
-
-	return &EnvConfig{
-		PORT:    port,
-		DB_ADDR: db_addr,
-		ENV:     env,
-	}
+	return defaultValue
 }
