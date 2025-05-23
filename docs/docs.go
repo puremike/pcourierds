@@ -51,7 +51,7 @@ const docTemplate = `{
         "main.healthResponse": {
             "type": "object",
             "properties": {
-                "app_version": {
+                "api_version": {
                     "type": "string"
                 },
                 "environment": {
@@ -70,9 +70,9 @@ const docTemplate = `{
 
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
-	Version:          "1.0",
+	Version:          "1.1.0",
 	Host:             "",
-	BasePath:         "/v1",
+	BasePath:         "/api/v1",
 	Schemes:          []string{},
 	Title:            "Courier Delivery System API",
 	Description:      "This is an API for a Courier Delivery System",

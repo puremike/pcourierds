@@ -12,9 +12,9 @@
             "name": "Apache 2.0",
             "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
         },
-        "version": "1.0"
+        "version": "1.1.0"
     },
-    "basePath": "/v1",
+    "basePath": "/api/v1",
     "paths": {
         "/health": {
             "get": {
@@ -44,7 +44,7 @@
         "main.healthResponse": {
             "type": "object",
             "properties": {
-                "app_version": {
+                "api_version": {
                     "type": "string"
                 },
                 "environment": {

@@ -1,35 +1,35 @@
 package main
 
-import "net/http"
+import (
+	"net/http"
+
+	"github.com/gin-gonic/gin"
+)
 
 type healthResponse struct {
 	Status      string `json:"status"`
 	Environment string `json:"environment"`
 	Message     string `json:"message"`
-	AppVersion  string `json:"app_version"`
+	ApiVersion  string `json:"api_version"`
 }
 
 // HealthCheck godoc
 //
-//	 @Summary		Get health
-//		@Description	Returns the status of the application
-//		@Tags			health
-//		@Accept			json
-//		@Produce		json
-//		@Success		200	{object}	healthResponse
-//		@Router			/health [get]
-func (app *application) health(w http.ResponseWriter, r *http.Request) {
+//	@Summary		Get health
+//	@Description	Returns the status of the application
+//	@Tags			health
+//	@Accept			json
+//	@Produce		json
+//	@Success		200	{object}	healthResponse
+//	@Router			/health [get]
+func (app *application) health(c *gin.Context) {
 
 	healthStr := healthResponse{
 		Status:      "Ok",
 		Environment: app.config.env,
-		Message:     "CDS Application is healthy",
-		AppVersion:  "1.0.0",
+		Message:     "Courier Delivery System is healthy",
+		ApiVersion:  apiVersion,
 	}
 
-	err := app.jsonResponse(w, http.StatusOK, healthStr)
-	if err != nil {
-		app.internalServer(w, r, err)
-		return
-	}
+	c.JSON(http.StatusOK, healthStr)
 }

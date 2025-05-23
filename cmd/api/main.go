@@ -4,8 +4,6 @@ import (
 	"time"
 
 	_ "github.com/lib/pq"
-	_ "github.com/puremike/pcourierds/docs"
-	"github.com/puremike/pcourierds/internal/db"
 	"github.com/puremike/pcourierds/internal/env"
 	"go.uber.org/zap"
 )
@@ -28,16 +26,19 @@ type dbconfig struct {
 	connsMaxIdleTime time.Duration
 }
 
-//	@title			Courier Delivery System API
-//	@version		1.0
-//	@description	This is an API for a Courier Delivery System
-// @contact.name   Puremike
-// @contact.url    http://github.com/puremike
-// @contact.email  digitalmarketfy@gmail.com
-// @license.name  Apache 2.0
-// @license.url   http://www.apache.org/licenses/LICENSE-2.0.html
-//	@BasePath		/v1
+const apiVersion = "1.1.0"
 
+// @title			Courier Delivery System API
+// @version		1.1.0
+// @description	This is an API for a Courier Delivery System
+//
+// @contact.name	Puremike
+// @contact.url	http://github.com/puremike
+// @contact.email	digitalmarketfy@gmail.com
+// @license.name	Apache 2.0
+// @license.url	http://www.apache.org/licenses/LICENSE-2.0.html
+//
+// @BasePath		/api/v1
 func main() {
 	cfg := &config{
 		port: env.GetEnvString("PORT", "5100"),
@@ -53,19 +54,19 @@ func main() {
 	logger := zap.NewExample().Sugar()
 	defer logger.Sync()
 
-	db, err := db.NewPostgresDB(cfg.dbconfig.db_url, cfg.dbconfig.maxIdleConns, cfg.dbconfig.maxOpenConns, cfg.dbconfig.connsMaxIdleTime)
-	if err != nil {
-		logger.Fatal(err)
-	}
-	defer db.Close()
+	// db, err := db.NewPostgresDB(cfg.dbconfig.db_url, cfg.dbconfig.maxIdleConns, cfg.dbconfig.maxOpenConns, cfg.dbconfig.connsMaxIdleTime)
+	// if err != nil {
+	// 	logger.Fatal(err)
+	// }
+	// defer db.Close()
 
-	logger.Infow("Connected to database successfully")
+	// logger.Infow("Connected to database successfully")
 
 	app := &application{
 		config: cfg,
 		logger: logger,
 	}
 
-	mux := app.mount()
+	mux := app.routes()
 	logger.Fatal(app.server(mux))
 }

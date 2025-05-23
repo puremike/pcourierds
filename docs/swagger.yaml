@@ -1,8 +1,8 @@
-basePath: /v1
+basePath: /api/v1
 definitions:
   main.healthResponse:
     properties:
-      app_version:
+      api_version:
         type: string
       environment:
         type: string
@@ -21,7 +21,7 @@ info:
     name: Apache 2.0
     url: http://www.apache.org/licenses/LICENSE-2.0.html
   title: Courier Delivery System API
-  version: "1.0"
+  version: 1.1.0
 paths:
   /health:
     get:
