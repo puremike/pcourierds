@@ -9,6 +9,7 @@ type User struct {
 	Role      string    `json:"role"` // "user", "dispatcher", "admin"
 	Password  string    `json:"password"`
 	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
 }
 
 type Package struct {
@@ -19,6 +20,7 @@ type Package struct {
 	Destination  string    `json:"destination"`
 	Status       string    `json:"status"`
 	CreatedAt    time.Time `json:"created_at"`
+	UpdatedAt    time.Time `json:"updated_at"`
 }
 
 type DispatcherApplication struct {
@@ -28,4 +30,18 @@ type DispatcherApplication struct {
 	License   string    `json:"license"`
 	Status    string    `json:"status"` // pending, approved, rejected
 	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
+}
+
+type Dispatcher struct {
+	ID            int       `json:"id"`
+	UserID        int       `json:"user_id"`
+	ApplicationID int       `json:"application_id"`
+	Vehicle       string    `json:"vehicle"`
+	License       string    `json:"license"`
+	ApprovedAt    time.Time `json:"approved_at"`
+	IsActive      bool      `json:"is_active"` // Indicates if currently working
+	Rating        float32   `json:"rating"`    // optional
+	CreatedAt     time.Time `json:"created_at"`
+	UpdatedAt     time.Time `json:"updated_at"`
 }

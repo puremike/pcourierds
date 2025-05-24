@@ -4,6 +4,7 @@ import (
 	"time"
 
 	_ "github.com/lib/pq"
+	"github.com/puremike/pcourierds/internal/db"
 	"github.com/puremike/pcourierds/internal/env"
 	"go.uber.org/zap"
 )
@@ -44,7 +45,7 @@ func main() {
 		port: env.GetEnvString("PORT", "5100"),
 		env:  env.GetEnvString("ENV", "development"),
 		dbconfig: dbconfig{
-			db_url:           env.GetEnvString("DB_URL", "postgres://postgres@localhost:5432/pcourierds?sslmode=disable"),
+			db_url:           env.GetEnvString("DB_ADDR", "postgres://postgres@localhost:5432/pcourierds?sslmode=disable"),
 			maxIdleConns:     env.GetEnvInt("SET_MAX_IDLE_CONNS", 10),
 			maxOpenConns:     env.GetEnvInt("SET_MAX_OPEN_CONNS", 100),
 			connsMaxIdleTime: env.GetEnvTDuration("SET_CONN_MAX_IDLE_TIME", 25*time.Minute),
@@ -54,13 +55,13 @@ func main() {
 	logger := zap.NewExample().Sugar()
 	defer logger.Sync()
 
-	// db, err := db.NewPostgresDB(cfg.dbconfig.db_url, cfg.dbconfig.maxIdleConns, cfg.dbconfig.maxOpenConns, cfg.dbconfig.connsMaxIdleTime)
-	// if err != nil {
-	// 	logger.Fatal(err)
-	// }
-	// defer db.Close()
+	db, err := db.NewPostgresDB(cfg.dbconfig.db_url, cfg.dbconfig.maxIdleConns, cfg.dbconfig.maxOpenConns, cfg.dbconfig.connsMaxIdleTime)
+	if err != nil {
+		logger.Fatal(err)
+	}
+	defer db.Close()
 
-	// logger.Infow("Connected to database successfully")
+	logger.Infow("Connected to database successfully")
 
 	app := &application{
 		config: cfg,
