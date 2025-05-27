@@ -6,12 +6,14 @@ import (
 	_ "github.com/lib/pq"
 	"github.com/puremike/pcourierds/internal/db"
 	"github.com/puremike/pcourierds/internal/env"
+	"github.com/puremike/pcourierds/internal/store"
 	"go.uber.org/zap"
 )
 
 type application struct {
 	config *config
 	logger *zap.SugaredLogger
+	store  *store.Storage
 }
 
 type config struct {
@@ -66,6 +68,7 @@ func main() {
 	app := &application{
 		config: cfg,
 		logger: logger,
+		store:  store.NewStorage(db),
 	}
 
 	mux := app.routes()

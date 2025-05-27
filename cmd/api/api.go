@@ -19,5 +19,10 @@ func (app *application) routes() http.Handler {
 		api.GET("swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
 	}
 
+	auth := api.Group("/auth")
+	{
+		auth.POST("/signup", app.CreateUser)
+		// auth.POST("/login", app.Login)
+	}
 	return g
 }

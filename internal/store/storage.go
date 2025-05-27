@@ -1,13 +1,15 @@
-package storage
+package store
 
 import (
+	"context"
 	"database/sql"
+	"time"
 
 	"github.com/puremike/pcourierds/internal/models"
 )
 
 type UsersRepository interface {
-	CreateUser(user *models.User) error
+	CreateUser(ctx context.Context, user *models.User) error
 }
 
 type DispatchersApplyRepository interface {
@@ -37,3 +39,7 @@ func NewStorage(db *sql.DB) *Storage {
 		Packages:               &PackageStore{db},
 	}
 }
+
+var (
+	QueryBackgroundTimeout = 5 * time.Second
+)

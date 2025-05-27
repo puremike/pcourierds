@@ -1,5 +1,23 @@
 basePath: /api/v1
 definitions:
+  main.createUserRequest:
+    properties:
+      confirm_password:
+        minLength: 8
+        type: string
+      email:
+        type: string
+      password:
+        minLength: 8
+        type: string
+      username:
+        type: string
+    required:
+    - confirm_password
+    - email
+    - password
+    - username
+    type: object
   main.healthResponse:
     properties:
       api_version:
@@ -9,6 +27,17 @@ definitions:
       message:
         type: string
       status:
+        type: string
+    type: object
+  main.userResponse:
+    properties:
+      email:
+        type: string
+      id:
+        type: string
+      role:
+        type: string
+      username:
         type: string
     type: object
 info:
@@ -23,6 +52,37 @@ info:
   title: Courier Delivery System API
   version: 1.1.0
 paths:
+  /auth/signup:
+    post:
+      consumes:
+      - application/json
+      description: Create a new user
+      parameters:
+      - description: User payload
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/main.createUserRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.userResponse'
+        "400":
+          description: Bad Request
+          schema: {}
+        "404":
+          description: Not Found
+          schema: {}
+        "500":
+          description: Internal Server Error
+          schema: {}
+      summary: Create user
+      tags:
+      - Users
   /health:
     get:
       consumes:
