@@ -6,12 +6,10 @@ definitions:
   main.createUserRequest:
     properties:
       confirm_password:
-        minLength: 8
         type: string
       email:
         type: string
       password:
-        minLength: 8
         type: string
       username:
         type: string
@@ -37,7 +35,6 @@ definitions:
       email:
         type: string
       password:
-        minLength: 8
         type: string
     required:
     - email
@@ -51,10 +48,8 @@ definitions:
   main.updatePasswordRequest:
     properties:
       confirm_password:
-        minLength: 8
         type: string
       new_password:
-        minLength: 8
         type: string
       old_password:
         type: string
@@ -95,36 +90,6 @@ info:
   title: Courier Delivery System API
   version: 1.1.0
 paths:
-  /auth/{id}:
-    get:
-      consumes:
-      - application/json
-      description: Get User by ID
-      parameters:
-      - description: User ID
-        in: path
-        name: id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/main.userResponse'
-        "400":
-          description: Bad Request
-          schema: {}
-        "404":
-          description: Not Found
-          schema: {}
-        "500":
-          description: Internal Server Error
-          schema: {}
-      summary: Get User
-      tags:
-      - Users
   /auth/change-password:
     put:
       consumes:
@@ -298,6 +263,64 @@ paths:
       summary: Get health
       tags:
       - health
+  /users/:
+    get:
+      consumes:
+      - application/json
+      description: Get All Users
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.userResponse'
+        "400":
+          description: Bad Request
+          schema: {}
+        "404":
+          description: Not Found
+          schema: {}
+        "500":
+          description: Internal Server Error
+          schema: {}
+      security:
+      - BearerAuth: []
+      summary: Get Users
+      tags:
+      - Users
+  /users/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get User by ID
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.userResponse'
+        "400":
+          description: Bad Request
+          schema: {}
+        "404":
+          description: Not Found
+          schema: {}
+        "500":
+          description: Internal Server Error
+          schema: {}
+      security:
+      - BearerAuth: []
+      summary: Get User
+      tags:
+      - Users
 securityDefinitions:
   BasicAuth:
     type: basic

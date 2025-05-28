@@ -15,6 +15,7 @@ type UsersRepository interface {
 	GetUserByEmail(ctx context.Context, email string) (*models.User, error)
 	UpdateUser(ctx context.Context, user *models.User, id string) (*models.User, error)
 	UpdatePassword(ctx context.Context, user *models.User, id string) error
+	GetAllUsers(ctx context.Context) (*[]models.User, error)
 }
 
 type DispatchersApplyRepository interface {

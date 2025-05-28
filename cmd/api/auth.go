@@ -137,12 +137,13 @@ func (app *application) login(c *gin.Context) {
 	}
 
 	claims := jwt.MapClaims{
-		"sub": user.ID,
-		"iss": app.config.authConfig.iss,
-		"aud": app.config.authConfig.aud,
-		"iat": time.Now().Unix(),
-		"nbf": time.Now().Unix(),
-		"exp": time.Now().Add(app.config.authConfig.tokenExp).Unix(),
+		"sub":  user.ID,
+		"role": user.Role,
+		"iss":  app.config.authConfig.iss,
+		"aud":  app.config.authConfig.aud,
+		"iat":  time.Now().Unix(),
+		"nbf":  time.Now().Unix(),
+		"exp":  time.Now().Add(app.config.authConfig.tokenExp).Unix(),
 	}
 
 	token, err := app.jwtAuth.GenerateToken(claims)
@@ -309,8 +310,16 @@ func (app *application) updatePassword(c *gin.Context) {
 //	@Failure		400	{object}	error
 //	@Failure		404	{object}	error
 //	@Failure		500	{object}	error
-//	@Router			/auth/{id} [get]
+//	@Router			/users/{id} [get]
+//
+// @Security		BearerAuth
 func (app *application) getUserById(c *gin.Context) {
+
+	authUser := app.getUserFromContext(c)
+	if authUser == nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
+		return
+	}
 
 	userId := c.Param("id")
 	user, err := app.store.Users.GetUserById(c.Request.Context(), userId)
@@ -326,4 +335,46 @@ func (app *application) getUserById(c *gin.Context) {
 		Role:      user.Role,
 		CreatedAt: user.CreatedAt.Format(time.RFC3339),
 	})
+}
+
+// Getusersgodoc
+//
+//	@Summary		Get Users
+//	@Description	Get All Users
+//	@Tags			Users
+//	@Accept			json
+//	@Produce		json
+//	@Success		200	{object}	userResponse
+//	@Failure		400	{object}	error
+//	@Failure		404	{object}	error
+//	@Failure		500	{object}	error
+//	@Router			/users/ [get]
+//
+// @Security		BearerAuth
+func (app *application) getUsers(c *gin.Context) {
+
+	authUser := app.getUserFromContext(c)
+	if authUser == nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
+		return
+	}
+
+	users, err := app.store.Users.GetAllUsers(c.Request.Context())
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to retrieve users"})
+		return
+	}
+
+	var response []userResponse
+	for _, user := range *users {
+		response = append(response, userResponse{
+			ID:        user.ID,
+			Username:  user.Username,
+			Email:     user.Email,
+			Role:      user.Role,
+			CreatedAt: user.CreatedAt.Format(time.RFC3339),
+		})
+	}
+
+	c.JSON(http.StatusOK, response)
 }

@@ -6,6 +6,8 @@ import (
 	"net/http"
 	"strings"
 
+	"slices"
+
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/puremike/pcourierds/internal/store"
@@ -109,5 +111,18 @@ func (app *application) AuthMiddleware() gin.HandlerFunc {
 		c.Set("user", user)
 		c.Set("userId", user.ID)
 		c.Next()
+	}
+}
+
+func (app *application) authorizeRoles(allowedRoles ...string) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		user := app.getUserFromContext(c)
+
+		if slices.Contains(allowedRoles, user.Role) {
+			c.Next()
+			return
+		}
+
+		c.AbortWithStatusJSON(http.StatusForbidden, gin.H{"error": "forbidden: insufficient role"})
 	}
 }

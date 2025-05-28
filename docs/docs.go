@@ -263,8 +263,76 @@ const docTemplate = `{
                 }
             }
         },
-        "/auth/{id}": {
+        "/health": {
             "get": {
+                "description": "Returns the status of the application",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "health"
+                ],
+                "summary": "Get health",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/main.healthResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/users/": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Get All Users",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Get Users",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/main.userResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {}
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {}
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {}
+                    }
+                }
+            }
+        },
+        "/users/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Get User by ID",
                 "consumes": [
                     "application/json"
@@ -306,29 +374,6 @@ const docTemplate = `{
                     }
                 }
             }
-        },
-        "/health": {
-            "get": {
-                "description": "Returns the status of the application",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "health"
-                ],
-                "summary": "Get health",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/main.healthResponse"
-                        }
-                    }
-                }
-            }
         }
     },
     "definitions": {
@@ -346,15 +391,13 @@ const docTemplate = `{
             ],
             "properties": {
                 "confirm_password": {
-                    "type": "string",
-                    "minLength": 8
+                    "type": "string"
                 },
                 "email": {
                     "type": "string"
                 },
                 "password": {
-                    "type": "string",
-                    "minLength": 8
+                    "type": "string"
                 },
                 "username": {
                     "type": "string"
@@ -389,8 +432,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "password": {
-                    "type": "string",
-                    "minLength": 8
+                    "type": "string"
                 }
             }
         },
@@ -411,12 +453,10 @@ const docTemplate = `{
             ],
             "properties": {
                 "confirm_password": {
-                    "type": "string",
-                    "minLength": 8
+                    "type": "string"
                 },
                 "new_password": {
-                    "type": "string",
-                    "minLength": 8
+                    "type": "string"
                 },
                 "old_password": {
                     "type": "string"

@@ -116,3 +116,33 @@ func (u *UserStore) UpdatePassword(ctx context.Context, user *models.User, id st
 	}
 	return nil
 }
+
+func (u *UserStore) GetAllUsers(ctx context.Context) (*[]models.User, error) {
+
+	ctx, cancel := context.WithTimeout(ctx, QueryBackgroundTimeout)
+	defer cancel()
+
+	query := `SELECT id, username, email, role, created_at FROM users`
+
+	var users []models.User
+
+	rows, err := u.db.QueryContext(ctx, query)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var u models.User
+		if err = rows.Scan(&u.ID, &u.Username, &u.Email, &u.Role, &u.CreatedAt); err != nil {
+			return nil, err
+		}
+
+		users = append(users, u)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return &users, nil
+}

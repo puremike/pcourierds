@@ -24,7 +24,6 @@ func (app *application) routes() http.Handler {
 	{
 		users.POST("/signup", app.createUser)
 		users.POST("/login", app.login)
-		users.GET("/:id", app.getUserById)
 	}
 
 	authGroup := api.Group("/")
@@ -33,6 +32,8 @@ func (app *application) routes() http.Handler {
 		authGroup.GET("/auth/me", app.userProfile)
 		authGroup.PATCH("/auth/update-profile", app.updateProfile)
 		authGroup.PUT("/auth/change-password", app.updatePassword)
+		authGroup.GET("/users/:id", app.authorizeRoles("user", "admin"), app.getUserById)
+		authGroup.GET("/users", app.authorizeRoles("admin"), app.getUsers)
 	}
 	return g
 }
