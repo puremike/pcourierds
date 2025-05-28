@@ -4,6 +4,7 @@ import (
 	"time"
 
 	_ "github.com/lib/pq"
+	"github.com/puremike/pcourierds/internal/auth"
 	"github.com/puremike/pcourierds/internal/db"
 	"github.com/puremike/pcourierds/internal/env"
 	"github.com/puremike/pcourierds/internal/store"
@@ -11,15 +12,21 @@ import (
 )
 
 type application struct {
-	config *config
-	logger *zap.SugaredLogger
-	store  *store.Storage
+	config  *config
+	logger  *zap.SugaredLogger
+	store   *store.Storage
+	jwtAuth *auth.JWTAuthenticator
 }
 
 type config struct {
-	port     string
-	env      string
-	dbconfig dbconfig
+	port       string
+	env        string
+	dbconfig   dbconfig
+	authConfig authConfig
+}
+
+type authConfig struct {
+	secret, iss, aud string
 }
 
 type dbconfig struct {
@@ -52,6 +59,11 @@ func main() {
 			maxOpenConns:     env.GetEnvInt("SET_MAX_OPEN_CONNS", 100),
 			connsMaxIdleTime: env.GetEnvTDuration("SET_CONN_MAX_IDLE_TIME", 25*time.Minute),
 		},
+		authConfig: authConfig{
+			secret: env.GetEnvString("JWT_SECRET", "secret"),
+			iss:    env.GetEnvString("JWT_ISS", "pcourierds"),
+			aud:    env.GetEnvString("JWT_AUD", "pcourierds"),
+		},
 	}
 
 	logger := zap.NewExample().Sugar()
@@ -66,9 +78,10 @@ func main() {
 	logger.Infow("Connected to database successfully")
 
 	app := &application{
-		config: cfg,
-		logger: logger,
-		store:  store.NewStorage(db),
+		config:  cfg,
+		logger:  logger,
+		store:   store.NewStorage(db),
+		jwtAuth: auth.NewJWTAuthenticator(cfg.authConfig.secret, cfg.authConfig.iss, cfg.authConfig.aud),
 	}
 
 	mux := app.routes()
