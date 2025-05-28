@@ -34,6 +34,7 @@ func (app *application) routes() http.Handler {
 		authGroup.PUT("/auth/change-password", app.updatePassword)
 		authGroup.GET("/users/:id", app.authorizeRoles("user", "admin"), app.getUserById)
 		authGroup.GET("/users", app.authorizeRoles("admin"), app.getUsers)
+		authGroup.POST("/dispatchers/apply", app.dispatcherApply)
 	}
 	return g
 }

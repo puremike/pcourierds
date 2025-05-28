@@ -263,6 +263,57 @@ const docTemplate = `{
                 }
             }
         },
+        "/dispatchers/apply": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Apply as a dispatcher",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Dispatchers"
+                ],
+                "summary": "Create dispatcher application",
+                "parameters": [
+                    {
+                        "description": "Dispatcher payload",
+                        "name": "payload",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/main.dispatcherApplyRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/main.dispatcherResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {}
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {}
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {}
+                    }
+                }
+            }
+        },
         "/health": {
             "get": {
                 "description": "Returns the status of the application",
@@ -400,6 +451,44 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "main.dispatcherApplyRequest": {
+            "type": "object",
+            "required": [
+                "license",
+                "vehicle"
+            ],
+            "properties": {
+                "license": {
+                    "type": "string"
+                },
+                "vehicle": {
+                    "type": "string"
+                }
+            }
+        },
+        "main.dispatcherResponse": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "license": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "user_id": {
+                    "type": "string"
+                },
+                "vehicle": {
                     "type": "string"
                 }
             }

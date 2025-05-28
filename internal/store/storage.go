@@ -19,7 +19,7 @@ type UsersRepository interface {
 }
 
 type DispatchersApplyRepository interface {
-	CreateDispatcherApplication(application *models.DispatcherApplication) error
+	DispatcherApplication(ctx context.Context, application *models.DispatcherApplication) (*models.DispatcherApplication, error)
 }
 
 type DispatchersRepository interface {
