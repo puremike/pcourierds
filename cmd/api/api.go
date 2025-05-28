@@ -12,6 +12,7 @@ import (
 func (app *application) routes() http.Handler {
 
 	g := gin.Default()
+
 	docs.SwaggerInfo.BasePath = "/api/v1"
 	api := g.Group("/api/v1")
 	{
@@ -19,10 +20,19 @@ func (app *application) routes() http.Handler {
 		api.GET("swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
 	}
 
-	auth := api.Group("/auth")
+	users := api.Group("/auth")
 	{
-		auth.POST("/signup", app.CreateUser)
-		// auth.POST("/login", app.Login)
+		users.POST("/signup", app.createUser)
+		users.POST("/login", app.login)
+		users.GET("/:id", app.getUserById)
+	}
+
+	authGroup := api.Group("/")
+	authGroup.Use(app.AuthMiddleware())
+	{
+		authGroup.GET("/auth/me", app.userProfile)
+		authGroup.PATCH("/auth/update-profile", app.updateProfile)
+		authGroup.PUT("/auth/change-password", app.updatePassword)
 	}
 	return g
 }

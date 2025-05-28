@@ -3,13 +3,18 @@ package store
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"time"
 
 	"github.com/puremike/pcourierds/internal/models"
 )
 
 type UsersRepository interface {
-	CreateUser(ctx context.Context, user *models.User) error
+	CreateUser(ctx context.Context, user *models.User) (*models.User, error)
+	GetUserById(ctx context.Context, id string) (*models.User, error)
+	GetUserByEmail(ctx context.Context, email string) (*models.User, error)
+	UpdateUser(ctx context.Context, user *models.User, id string) (*models.User, error)
+	UpdatePassword(ctx context.Context, user *models.User, id string) error
 }
 
 type DispatchersApplyRepository interface {
@@ -42,4 +47,5 @@ func NewStorage(db *sql.DB) *Storage {
 
 var (
 	QueryBackgroundTimeout = 5 * time.Second
+	ErrUserNotFound        = errors.New("user not found")
 )

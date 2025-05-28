@@ -1,5 +1,8 @@
 basePath: /api/v1
 definitions:
+  gin.H:
+    additionalProperties: {}
+    type: object
   main.createUserRequest:
     properties:
       confirm_password:
@@ -29,8 +32,48 @@ definitions:
       status:
         type: string
     type: object
+  main.loginRequest:
+    properties:
+      email:
+        type: string
+      password:
+        minLength: 8
+        type: string
+    required:
+    - email
+    - password
+    type: object
+  main.loginResponse:
+    properties:
+      token:
+        type: string
+    type: object
+  main.updatePasswordRequest:
+    properties:
+      confirm_password:
+        minLength: 8
+        type: string
+      new_password:
+        minLength: 8
+        type: string
+      old_password:
+        type: string
+    required:
+    - confirm_password
+    - new_password
+    - old_password
+    type: object
+  main.userProfileUpdateRequest:
+    properties:
+      email:
+        type: string
+      username:
+        type: string
+    type: object
   main.userResponse:
     properties:
+      created_at:
+        type: string
       email:
         type: string
       id:
@@ -52,6 +95,130 @@ info:
   title: Courier Delivery System API
   version: 1.1.0
 paths:
+  /auth/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get User by ID
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.userResponse'
+        "400":
+          description: Bad Request
+          schema: {}
+        "404":
+          description: Not Found
+          schema: {}
+        "500":
+          description: Internal Server Error
+          schema: {}
+      summary: Get User
+      tags:
+      - Users
+  /auth/change-password:
+    put:
+      consumes:
+      - application/json
+      description: Update Current User Password
+      parameters:
+      - description: update credentials
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/main.updatePasswordRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: password updated
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema: {}
+        "404":
+          description: Not Found
+          schema: {}
+        "500":
+          description: Internal Server Error
+          schema: {}
+      security:
+      - BearerAuth: []
+      summary: Update User Password
+      tags:
+      - Users
+  /auth/login:
+    post:
+      consumes:
+      - application/json
+      description: Authenticates a user using email and password, and returns a JWT
+        token on success.
+      parameters:
+      - description: Login credentials
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/main.loginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.loginResponse'
+        "400":
+          description: Bad Request - invalid input
+          schema:
+            $ref: '#/definitions/gin.H'
+        "401":
+          description: Unauthorized - invalid credentials
+          schema:
+            $ref: '#/definitions/gin.H'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/gin.H'
+      summary: Login User
+      tags:
+      - Users
+  /auth/me:
+    get:
+      consumes:
+      - application/json
+      description: Get Current User Profile
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.userResponse'
+        "400":
+          description: Bad Request
+          schema: {}
+        "404":
+          description: Not Found
+          schema: {}
+        "500":
+          description: Internal Server Error
+          schema: {}
+      security:
+      - BearerAuth: []
+      summary: Get User Profile
+      tags:
+      - Users
   /auth/signup:
     post:
       consumes:
@@ -83,6 +250,39 @@ paths:
       summary: Create user
       tags:
       - Users
+  /auth/update-profile:
+    patch:
+      consumes:
+      - application/json
+      description: Update Current User Profile
+      parameters:
+      - description: update credentials
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/main.userProfileUpdateRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.userResponse'
+        "400":
+          description: Bad Request
+          schema: {}
+        "404":
+          description: Not Found
+          schema: {}
+        "500":
+          description: Internal Server Error
+          schema: {}
+      security:
+      - BearerAuth: []
+      summary: Update User Profile
+      tags:
+      - Users
   /health:
     get:
       consumes:
@@ -98,4 +298,12 @@ paths:
       summary: Get health
       tags:
       - health
+securityDefinitions:
+  BasicAuth:
+    type: basic
+  BearerAuth:
+    description: 'Use a valid JWT token. Format: Bearer <token>'
+    in: header
+    name: Authorization
+    type: apiKey
 swagger: "2.0"

@@ -8,7 +8,7 @@ require (
 	go.uber.org/zap v1.27.0
 )
 
-require github.com/go-playground/validator/v10 v10.26.0 // indirect
+require github.com/go-playground/validator/v10 v10.26.0
 
 require (
 	github.com/KyleBanks/depth v1.2.1 // indirect

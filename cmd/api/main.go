@@ -19,14 +19,20 @@ type application struct {
 }
 
 type config struct {
-	port       string
-	env        string
-	dbconfig   dbconfig
-	authConfig authConfig
+	port            string
+	env             string
+	dbconfig        dbconfig
+	authConfig      authConfig
+	basicAuthConfig basicAuthConfig
+}
+
+type basicAuthConfig struct {
+	username, password string
 }
 
 type authConfig struct {
 	secret, iss, aud string
+	tokenExp         time.Duration
 }
 
 type dbconfig struct {
@@ -38,18 +44,25 @@ type dbconfig struct {
 
 const apiVersion = "1.1.0"
 
-// @title			Courier Delivery System API
-// @version		1.1.0
-// @description	This is an API for a Courier Delivery System
+// @title						Courier Delivery System API
+// @version					1.1.0
+// @description				This is an API for a Courier Delivery System
 //
-// @contact.name	Puremike
-// @contact.url	http://github.com/puremike
-// @contact.email	digitalmarketfy@gmail.com
-// @license.name	Apache 2.0
-// @license.url	http://www.apache.org/licenses/LICENSE-2.0.html
+// @contact.name				Puremike
+// @contact.url				http://github.com/puremike
+// @contact.email				digitalmarketfy@gmail.com
+// @license.name				Apache 2.0
+// @license.url				http://www.apache.org/licenses/LICENSE-2.0.html
 //
-// @BasePath		/api/v1
+// @BasePath					/api/v1
+// @securityDefinitions.basic	BasicAuth
+//
+// @securityDefinitions.apikey	BearerAuth
+// @in							header
+// @name						Authorization
+// @description				Use a valid JWT token. Format: Bearer <token>
 func main() {
+
 	cfg := &config{
 		port: env.GetEnvString("PORT", "5100"),
 		env:  env.GetEnvString("ENV", "development"),
@@ -63,6 +76,10 @@ func main() {
 			secret: env.GetEnvString("JWT_SECRET", "secret"),
 			iss:    env.GetEnvString("JWT_ISS", "pcourierds"),
 			aud:    env.GetEnvString("JWT_AUD", "pcourierds"),
+			tokenExp: env.GetEnvTDuration(
+				"JWT_TOKEN_EXP",
+				60*time.Hour,
+			),
 		},
 	}
 
