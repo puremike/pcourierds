@@ -73,13 +73,17 @@ func main() {
 			connsMaxIdleTime: env.GetEnvTDuration("SET_CONN_MAX_IDLE_TIME", 25*time.Minute),
 		},
 		authConfig: authConfig{
-			secret: env.GetEnvString("JWT_SECRET", "secret"),
+			secret: env.GetEnvString("JWT_SECRET", "1201fd4db595d3d9341e5c954e0d93f07a986380580f11da93cc4dfc942c3988"),
 			iss:    env.GetEnvString("JWT_ISS", "pcourierds"),
 			aud:    env.GetEnvString("JWT_AUD", "pcourierds"),
 			tokenExp: env.GetEnvTDuration(
 				"JWT_TOKEN_EXP",
 				60*time.Hour,
 			),
+		},
+		basicAuthConfig: basicAuthConfig{
+			username: env.GetEnvString("BASIC_AUTH_USERNAME", "pcourierds"),
+			password: env.GetEnvString("BASIC_AUTH_PASSWORD", "adcsdcpfdfcsggffgfgourierds"),
 		},
 	}
 

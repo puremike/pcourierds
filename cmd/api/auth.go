@@ -29,7 +29,7 @@ type userResponse struct {
 
 type loginRequest struct {
 	Email    string `json:"email" binding:"required,email"`
-	Password string `json:"password" binding:"required,passwd"`
+	Password string `json:"password" binding:"required"`
 }
 
 type loginResponse struct {
@@ -42,7 +42,7 @@ type userProfileUpdateRequest struct {
 }
 
 type updatePasswordRequest struct {
-	OldPassword     string `json:"old_password" binding:"required,passwd"`
+	OldPassword     string `json:"old_password" binding:"required"`
 	NewPassword     string `json:"new_password" binding:"required,passwd"`
 	ConfirmPassword string `json:"confirm_password" binding:"required,passwd"`
 }

@@ -13,7 +13,7 @@ import (
 	"github.com/puremike/pcourierds/internal/store"
 )
 
-func (app *application) BasicAuthentication() gin.HandlerFunc {
+func (app *application) basicAuthentication() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		authHeader := c.GetHeader("Authorization")
 
@@ -25,7 +25,7 @@ func (app *application) BasicAuthentication() gin.HandlerFunc {
 		}
 
 		parts := strings.Split(authHeader, " ")
-		if len(parts) != 2 || strings.ToLower(parts[0]) != "Basic" {
+		if len(parts) != 2 || strings.ToLower(parts[0]) != "basic" {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "authorization header is deformed"})
 			c.Abort()
 			return
@@ -55,7 +55,7 @@ func (app *application) BasicAuthentication() gin.HandlerFunc {
 	}
 }
 
-func (app *application) AuthMiddleware() gin.HandlerFunc {
+func (app *application) authMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 
 		authHeader := c.GetHeader("Authorization")
@@ -124,5 +124,28 @@ func (app *application) authorizeRoles(allowedRoles ...string) gin.HandlerFunc {
 		}
 
 		c.AbortWithStatusJSON(http.StatusForbidden, gin.H{"error": "forbidden: insufficient role"})
+	}
+}
+
+func (app *application) getDispatcherAppMiddleware() gin.HandlerFunc {
+	return func(c *gin.Context) {
+
+		id := c.Param("id")
+
+		dispatchApps, err := app.store.DispatcherApplications.GetApplicationById(c.Request.Context(), id)
+
+		if err != nil {
+			if errors.Is(err, store.ErrDispatcherApplicationNotFound) {
+				c.JSON(http.StatusNotFound, gin.H{"error": "dispatcher application not found"})
+				c.Abort()
+				return
+			}
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to retrieve dispatcher application"})
+			c.Abort()
+			return
+		}
+
+		c.Set("dispatcherApp", dispatchApps)
+		c.Next()
 	}
 }

@@ -16,7 +16,7 @@ func (app *application) routes() http.Handler {
 	docs.SwaggerInfo.BasePath = "/api/v1"
 	api := g.Group("/api/v1")
 	{
-		api.GET("/health", app.health)
+		api.GET("/health", app.basicAuthentication(), app.health)
 		api.GET("swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
 	}
 
@@ -27,7 +27,7 @@ func (app *application) routes() http.Handler {
 	}
 
 	authGroup := api.Group("/")
-	authGroup.Use(app.AuthMiddleware())
+	authGroup.Use(app.authMiddleware())
 	{
 		authGroup.GET("/auth/me", app.userProfile)
 		authGroup.PATCH("/auth/update-profile", app.updateProfile)
@@ -35,6 +35,9 @@ func (app *application) routes() http.Handler {
 		authGroup.GET("/users/:id", app.authorizeRoles("user", "admin"), app.getUserById)
 		authGroup.GET("/users", app.authorizeRoles("admin"), app.getUsers)
 		authGroup.POST("/dispatchers/apply", app.dispatcherApply)
+		authGroup.GET("/admin/dispatcher-applications", app.authorizeRoles("admin"), app.getAllApplications)
+		authGroup.GET("/admin/dispatcher-applications/:id", app.authorizeRoles("admin"), app.getDispatcherAppMiddleware(), app.getDispatcherApplicationById)
 	}
+
 	return g
 }

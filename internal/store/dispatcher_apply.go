@@ -34,3 +34,51 @@ func (d *DispatcherApplyStore) DispatcherApplication(ctx context.Context, applic
 
 	return application, nil
 }
+
+func (d *DispatcherApplyStore) GetAllApplications(ctx context.Context) (*[]models.DispatcherApplication, error) {
+
+	ctx, cancel := context.WithTimeout(ctx, QueryBackgroundTimeout)
+	defer cancel()
+
+	query := `SELECT id, user_id, vehicle, license, status, created_at FROM dispatchers_apply`
+
+	var dispatchersApp []models.DispatcherApplication
+
+	rows, err := d.db.QueryContext(ctx, query)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var d models.DispatcherApplication
+		if err = rows.Scan(&d.ID, &d.UserID, &d.Vehicle, &d.License, &d.Status, &d.CreatedAt); err != nil {
+			return nil, err
+		}
+
+		dispatchersApp = append(dispatchersApp, d)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return &dispatchersApp, nil
+}
+
+func (d *DispatcherApplyStore) GetApplicationById(ctx context.Context, id string) (*models.DispatcherApplication, error) {
+	ctx, cancel := context.WithTimeout(ctx, QueryBackgroundTimeout)
+	defer cancel()
+
+	dispatcherApp := &models.DispatcherApplication{}
+
+	query := `SELECT id, user_id, vehicle, license, status, created_at FROM dispatchers_apply WHERE id = $1`
+
+	if err := d.db.QueryRowContext(ctx, query, id).Scan(&dispatcherApp.ID, &dispatcherApp.UserID, &dispatcherApp.Vehicle, &dispatcherApp.License, &dispatcherApp.Status, &dispatcherApp.CreatedAt); err != nil {
+		if err == sql.ErrNoRows {
+			return nil, ErrDispatcherApplicationNotFound
+		}
+		return nil, err
+	}
+
+	return dispatcherApp, nil
+}

@@ -20,6 +20,8 @@ type UsersRepository interface {
 
 type DispatchersApplyRepository interface {
 	DispatcherApplication(ctx context.Context, application *models.DispatcherApplication) (*models.DispatcherApplication, error)
+	GetAllApplications(ctx context.Context) (*[]models.DispatcherApplication, error)
+	GetApplicationById(ctx context.Context, id string) (*models.DispatcherApplication, error)
 }
 
 type DispatchersRepository interface {
@@ -47,6 +49,7 @@ func NewStorage(db *sql.DB) *Storage {
 }
 
 var (
-	QueryBackgroundTimeout = 5 * time.Second
-	ErrUserNotFound        = errors.New("user not found")
+	QueryBackgroundTimeout           = 5 * time.Second
+	ErrUserNotFound                  = errors.New("user not found")
+	ErrDispatcherApplicationNotFound = errors.New("dispatcher application not found")
 )

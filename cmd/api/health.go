@@ -22,6 +22,8 @@ type healthResponse struct {
 //	@Produce		json
 //	@Success		200	{object}	healthResponse
 //	@Router			/health [get]
+//
+//	@SecurityA		BasicAuth
 func (app *application) health(c *gin.Context) {
 
 	healthStr := healthResponse{
