@@ -69,11 +69,6 @@ func (app *application) dispatcherApply(c *gin.Context) {
 
 	authUser := app.getUserFromContext(c)
 
-	if authUser == nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
-		return
-	}
-
 	if authUser.Role == "admin" {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "only users can create applications"})
 		return
@@ -136,10 +131,6 @@ func (app *application) dispatcherApply(c *gin.Context) {
 func (app *application) getAllApplications(c *gin.Context) {
 
 	authUser := app.getUserFromContext(c)
-	if authUser == nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
-		return
-	}
 
 	if authUser.Role != "admin" {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
@@ -188,10 +179,6 @@ func (app *application) getAllApplications(c *gin.Context) {
 func (app *application) getDispatcherApplicationById(c *gin.Context) {
 
 	authUser := app.getUserFromContext(c)
-	if authUser == nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
-		return
-	}
 
 	if authUser.Role != "admin" {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
@@ -238,10 +225,6 @@ func (app *application) getDispatcherApplicationById(c *gin.Context) {
 func (app *application) approveDenyApplication(c *gin.Context) {
 
 	authUser := app.getUserFromContext(c)
-	if authUser == nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
-		return
-	}
 
 	if authUser.Role != "admin" {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
@@ -305,7 +288,7 @@ func (app *application) approveDenyApplication(c *gin.Context) {
 	}
 
 	user.Role = "dispatcher"
-	if err := app.store.Users.UpdateUserRole(c.Request.Context(), user, user.ID); err != nil {
+	if _, err := app.store.Users.UpdateUser(c.Request.Context(), user, user.ID); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to update user"})
 		return
 	}

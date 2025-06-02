@@ -232,6 +232,135 @@ paths:
       summary: Get Dispatcher Application
       tags:
       - DispatchersApply
+  /admin/user:
+    post:
+      consumes:
+      - application/json
+      description: Create a new user
+      parameters:
+      - description: User payload
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/main.createUserRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/main.userResponse'
+        "400":
+          description: Bad Request
+          schema: {}
+        "404":
+          description: Not Found
+          schema: {}
+        "500":
+          description: Internal Server Error
+          schema: {}
+      security:
+      - BearerAuth: []
+      summary: Create user manually
+      tags:
+      - Admin
+  /admin/user/{id}:
+    patch:
+      consumes:
+      - application/json
+      description: Update Current User Profile
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: update credentials
+        in: body
+        name: payload
+        required: true
+        schema:
+          $ref: '#/definitions/main.userProfileUpdateRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/main.userResponse'
+        "400":
+          description: Bad Request
+          schema: {}
+        "404":
+          description: Not Found
+          schema: {}
+        "500":
+          description: Internal Server Error
+          schema: {}
+      security:
+      - BearerAuth: []
+      summary: Update User Profile
+      tags:
+      - Admin
+  /admin/users/:
+    get:
+      consumes:
+      - application/json
+      description: Get All Users
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.userResponse'
+        "400":
+          description: Bad Request
+          schema: {}
+        "404":
+          description: Not Found
+          schema: {}
+        "500":
+          description: Internal Server Error
+          schema: {}
+      security:
+      - BearerAuth: []
+      summary: Get Users
+      tags:
+      - Admin
+  /admin/users/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get User by ID
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.userResponse'
+        "400":
+          description: Bad Request
+          schema: {}
+        "404":
+          description: Not Found
+          schema: {}
+        "500":
+          description: Internal Server Error
+          schema: {}
+      security:
+      - BearerAuth: []
+      summary: Get User
+      tags:
+      - Admin
   /auth/change-password:
     put:
       consumes:
@@ -264,7 +393,7 @@ paths:
       - BearerAuth: []
       summary: Update User Password
       tags:
-      - Users
+      - Auth
   /auth/login:
     post:
       consumes:
@@ -299,7 +428,7 @@ paths:
             $ref: '#/definitions/gin.H'
       summary: Login User
       tags:
-      - Users
+      - Auth
   /auth/me:
     get:
       consumes:
@@ -325,7 +454,7 @@ paths:
       - BearerAuth: []
       summary: Get User Profile
       tags:
-      - Users
+      - Auth
   /auth/signup:
     post:
       consumes:
@@ -356,7 +485,7 @@ paths:
           schema: {}
       summary: Create user
       tags:
-      - Users
+      - Auth
   /auth/update-profile:
     patch:
       consumes:
@@ -389,7 +518,7 @@ paths:
       - BearerAuth: []
       summary: Update User Profile
       tags:
-      - Users
+      - Auth
   /dispatchers/apply:
     post:
       consumes:
@@ -438,64 +567,6 @@ paths:
       summary: Get health
       tags:
       - health
-  /users/:
-    get:
-      consumes:
-      - application/json
-      description: Get All Users
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/main.userResponse'
-        "400":
-          description: Bad Request
-          schema: {}
-        "404":
-          description: Not Found
-          schema: {}
-        "500":
-          description: Internal Server Error
-          schema: {}
-      security:
-      - BearerAuth: []
-      summary: Get Users
-      tags:
-      - Users
-  /users/{id}:
-    get:
-      consumes:
-      - application/json
-      description: Get User by ID
-      parameters:
-      - description: User ID
-        in: path
-        name: id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/main.userResponse'
-        "400":
-          description: Bad Request
-          schema: {}
-        "404":
-          description: Not Found
-          schema: {}
-        "500":
-          description: Internal Server Error
-          schema: {}
-      security:
-      - BearerAuth: []
-      summary: Get User
-      tags:
-      - Users
 securityDefinitions:
   BasicAuth:
     type: basic

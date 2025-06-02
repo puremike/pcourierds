@@ -16,7 +16,7 @@ type UsersRepository interface {
 	UpdateUser(ctx context.Context, user *models.User, id string) (*models.User, error)
 	UpdatePassword(ctx context.Context, user *models.User, id string) error
 	GetAllUsers(ctx context.Context) (*[]models.User, error)
-	UpdateUserRole(ctx context.Context, user *models.User, id string) error
+	// UpdateUserRole(ctx context.Context, user *models.User, id string) error
 }
 
 type DispatchersApplyRepository interface {

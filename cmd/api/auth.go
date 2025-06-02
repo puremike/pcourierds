@@ -51,7 +51,7 @@ type updatePasswordRequest struct {
 //
 //	@Summary		Create user
 //	@Description	Create a new user
-//	@Tags			Users
+//	@Tags			Auth
 //	@Accept			json
 //	@Produce		json
 //	@Param			payload	body		createUserRequest	true	"User payload"
@@ -104,7 +104,7 @@ func (app *application) createUser(c *gin.Context) {
 //
 //	@Summary		Login User
 //	@Description	Authenticates a user using email and password, and returns a JWT token on success.
-//	@Tags			Users
+//	@Tags			Auth
 //	@Accept			json
 //	@Produce		json
 //	@Param			payload	body		loginRequest	true	"Login credentials"
@@ -161,7 +161,7 @@ func (app *application) login(c *gin.Context) {
 //
 //	@Summary		Get User Profile
 //	@Description	Get Current User Profile
-//	@Tags			Users
+//	@Tags			Auth
 //	@Accept			json
 //	@Produce		json
 //	@Success		200	{object}	userResponse
@@ -187,7 +187,7 @@ func (app *application) userProfile(c *gin.Context) {
 //
 //	@Summary		Update User Profile
 //	@Description	Update Current User Profile
-//	@Tags			Users
+//	@Tags			Auth
 //	@Accept			json
 //	@Produce		json
 //	@Param			payload	body		userProfileUpdateRequest	true	"update credentials"
@@ -243,7 +243,7 @@ func (app *application) updateProfile(c *gin.Context) {
 //
 //	@Summary		Update User Password
 //	@Description	Update Current User Password
-//	@Tags			Users
+//	@Tags			Auth
 //	@Accept			json
 //	@Produce		json
 //	@Param			payload	body		updatePasswordRequest	true	"update credentials"
@@ -296,85 +296,4 @@ func (app *application) updatePassword(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusCreated, "password updated successfully")
-}
-
-// GetuserById godoc
-//
-//	@Summary		Get User
-//	@Description	Get User by ID
-//	@Tags			Users
-//	@Accept			json
-//	@Produce		json
-//	@Param			id	path		string	true	"User ID"
-//	@Success		200	{object}	userResponse
-//	@Failure		400	{object}	error
-//	@Failure		404	{object}	error
-//	@Failure		500	{object}	error
-//	@Router			/users/{id} [get]
-//
-// @Security		BearerAuth
-func (app *application) getUserById(c *gin.Context) {
-
-	authUser := app.getUserFromContext(c)
-	if authUser == nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
-		return
-	}
-
-	userId := c.Param("id")
-	user, err := app.store.Users.GetUserById(c.Request.Context(), userId)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to retrieve user"})
-		return
-	}
-
-	c.JSON(http.StatusOK, userResponse{
-		ID:        user.ID,
-		Username:  user.Username,
-		Email:     user.Email,
-		Role:      user.Role,
-		CreatedAt: user.CreatedAt.Format(time.RFC3339),
-	})
-}
-
-// Getusersgodoc
-//
-//	@Summary		Get Users
-//	@Description	Get All Users
-//	@Tags			Users
-//	@Accept			json
-//	@Produce		json
-//	@Success		200	{object}	userResponse
-//	@Failure		400	{object}	error
-//	@Failure		404	{object}	error
-//	@Failure		500	{object}	error
-//	@Router			/users/ [get]
-//
-// @Security		BearerAuth
-func (app *application) getUsers(c *gin.Context) {
-
-	authUser := app.getUserFromContext(c)
-	if authUser == nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
-		return
-	}
-
-	users, err := app.store.Users.GetAllUsers(c.Request.Context())
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to retrieve users"})
-		return
-	}
-
-	var response []userResponse
-	for _, user := range *users {
-		response = append(response, userResponse{
-			ID:        user.ID,
-			Username:  user.Username,
-			Email:     user.Email,
-			Role:      user.Role,
-			CreatedAt: user.CreatedAt.Format(time.RFC3339),
-		})
-	}
-
-	c.JSON(http.StatusOK, response)
 }
