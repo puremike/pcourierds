@@ -38,10 +38,11 @@ func (app *application) routes() http.Handler {
 		authGroup.GET("/admin/dispatcher-applications/:id", app.authorizeRoles("admin"), app.getDispatcherAppMiddleware(), app.getDispatcherApplicationById)
 		authGroup.PATCH("/admin/approve-dispatcher/:userID", app.authorizeRoles("admin"), app.getDispatcherAppByUserIdMiddleware(), app.approveDenyApplication)
 
-		authGroup.GET("/admin/users/:id", app.authorizeRoles("user", "admin"), app.getUserById)
+		authGroup.GET("/admin/user/:id", app.authorizeRoles("user", "admin"), app.getUserById)
 		authGroup.GET("/admin/users", app.authorizeRoles("admin"), app.getUsers)
 		authGroup.POST("/admin/user", app.authorizeRoles("admin"), app.adminCreateUser)
 		authGroup.PATCH("/admin/user/:id", app.authorizeRoles("admin"), app.adminUpdateProfile)
+		authGroup.DELETE("/admin/user/:id", app.authorizeRoles("admin"), app.adminDeleteUser)
 	}
 
 	return g

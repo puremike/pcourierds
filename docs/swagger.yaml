@@ -266,6 +266,70 @@ paths:
       tags:
       - Admin
   /admin/user/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete User by ID
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: user deleted
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Bad Request
+          schema: {}
+        "404":
+          description: Not Found
+          schema: {}
+        "500":
+          description: Internal Server Error
+          schema: {}
+      security:
+      - BearerAuth: []
+      summary: Delete User
+      tags:
+      - Admin
+    get:
+      consumes:
+      - application/json
+      description: Get User by ID
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.userResponse'
+        "400":
+          description: Bad Request
+          schema: {}
+        "404":
+          description: Not Found
+          schema: {}
+        "500":
+          description: Internal Server Error
+          schema: {}
+      security:
+      - BearerAuth: []
+      summary: Get User
+      tags:
+      - Admin
     patch:
       consumes:
       - application/json
@@ -327,38 +391,6 @@ paths:
       security:
       - BearerAuth: []
       summary: Get Users
-      tags:
-      - Admin
-  /admin/users/{id}:
-    get:
-      consumes:
-      - application/json
-      description: Get User by ID
-      parameters:
-      - description: User ID
-        in: path
-        name: id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/main.userResponse'
-        "400":
-          description: Bad Request
-          schema: {}
-        "404":
-          description: Not Found
-          schema: {}
-        "500":
-          description: Internal Server Error
-          schema: {}
-      security:
-      - BearerAuth: []
-      summary: Get User
       tags:
       - Admin
   /auth/change-password:

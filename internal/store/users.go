@@ -146,3 +146,27 @@ func (u *UserStore) GetAllUsers(ctx context.Context) (*[]models.User, error) {
 
 	return &users, nil
 }
+
+func (u *UserStore) DeleteUserById(ctx context.Context, id string) error {
+	ctx, cancel := context.WithTimeout(ctx, QueryBackgroundTimeout)
+	defer cancel()
+
+	query := `DELETE FROM users WHERE id = $1`
+
+	tx, err := u.db.BeginTx(ctx, nil)
+	if err != nil {
+		return err
+	}
+
+	defer tx.Rollback()
+
+	if _, err := u.db.ExecContext(ctx, query, id); err != nil {
+		return err
+	}
+
+	if err = tx.Commit(); err != nil {
+		return err
+	}
+
+	return nil
+}

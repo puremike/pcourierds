@@ -70,7 +70,7 @@ func (app *application) adminCreateUser(c *gin.Context) {
 //	@Tags			Admin
 //	@Accept			json
 //	@Produce		json
-//	@Param			id	path		string	true	"User ID"
+//	@Param			id		path		string						true	"User ID"
 //	@Param			payload	body		userProfileUpdateRequest	true	"update credentials"
 //	@Success		201		{object}	userResponse
 //	@Failure		400		{object}	error
@@ -145,9 +145,9 @@ func (app *application) adminUpdateProfile(c *gin.Context) {
 //	@Failure		400	{object}	error
 //	@Failure		404	{object}	error
 //	@Failure		500	{object}	error
-//	@Router			/admin/users/{id} [get]
+//	@Router			/admin/user/{id} [get]
 //
-// @Security		BearerAuth
+//	@Security		BearerAuth
 func (app *application) getUserById(c *gin.Context) {
 
 	authUser := app.getUserFromContext(c)
@@ -186,7 +186,7 @@ func (app *application) getUserById(c *gin.Context) {
 //	@Failure		500	{object}	error
 //	@Router			/admin/users/ [get]
 //
-// @Security		BearerAuth
+//	@Security		BearerAuth
 func (app *application) getUsers(c *gin.Context) {
 
 	authUser := app.getUserFromContext(c)
@@ -214,4 +214,37 @@ func (app *application) getUsers(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, response)
+}
+
+// DeleteuserById godoc
+//
+//	@Summary		Delete User
+//	@Description	Delete User by ID
+//	@Tags			Admin
+//	@Accept			json
+//	@Produce		json
+//	@Param			id	path		string				true	"User ID"
+//	@Success		200	{object}	map[string]string	"user deleted"
+//	@Failure		400	{object}	error
+//	@Failure		404	{object}	error
+//	@Failure		500	{object}	error
+//	@Router			/admin/user/{id} [delete]
+//
+//	@Security		BearerAuth
+func (app *application) adminDeleteUser(c *gin.Context) {
+
+	authUser := app.getUserFromContext(c)
+
+	if authUser.Role != "admin" {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
+		return
+	}
+
+	userId := c.Param("id")
+	if err := app.store.Users.DeleteUserById(c.Request.Context(), userId); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to delete user"})
+		return
+	}
+
+	c.JSON(http.StatusOK, "user deleted successfully")
 }
