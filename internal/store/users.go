@@ -94,6 +94,29 @@ func (u *UserStore) UpdateUser(ctx context.Context, user *models.User, id string
 	return user, nil
 }
 
+func (u *UserStore) UpdateUserRole(ctx context.Context, user *models.User, id string) error {
+	ctx, cancel := context.WithTimeout(ctx, QueryBackgroundTimeout)
+	defer cancel()
+
+	query := `UPDATE users SET role = $1 WHERE id = $2`
+
+	tx, err := u.db.BeginTx(ctx, nil)
+	if err != nil {
+		return err
+	}
+
+	defer tx.Rollback()
+
+	if _, err = tx.ExecContext(ctx, query, user.Role, id); err != nil {
+		return err
+	}
+
+	if err = tx.Commit(); err != nil {
+		return err
+	}
+	return nil
+}
+
 func (u *UserStore) UpdatePassword(ctx context.Context, user *models.User, id string) error {
 	ctx, cancel := context.WithTimeout(ctx, QueryBackgroundTimeout)
 	defer cancel()

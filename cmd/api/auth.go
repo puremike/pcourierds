@@ -55,7 +55,7 @@ type updatePasswordRequest struct {
 //	@Accept			json
 //	@Produce		json
 //	@Param			payload	body		createUserRequest	true	"User payload"
-//	@Success		200		{object}	userResponse
+//	@Success		201		{object}	userResponse
 //	@Failure		400		{object}	error
 //	@Failure		404		{object}	error
 //	@Failure		500		{object}	error
@@ -191,7 +191,7 @@ func (app *application) userProfile(c *gin.Context) {
 //	@Accept			json
 //	@Produce		json
 //	@Param			payload	body		userProfileUpdateRequest	true	"update credentials"
-//	@Success		200		{object}	userResponse
+//	@Success		201		{object}	userResponse
 //	@Failure		400		{object}	error
 //	@Failure		404		{object}	error
 //	@Failure		500		{object}	error
@@ -230,7 +230,7 @@ func (app *application) updateProfile(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, userResponse{
+	c.JSON(http.StatusCreated, userResponse{
 		ID:        updatedUser.ID,
 		Username:  updatedUser.Username,
 		Email:     updatedUser.Email,
@@ -247,7 +247,7 @@ func (app *application) updateProfile(c *gin.Context) {
 //	@Accept			json
 //	@Produce		json
 //	@Param			payload	body		updatePasswordRequest	true	"update credentials"
-//	@Success		200		{object}	string					"password updated"
+//	@Success		201		{object}	string					"password updated"
 //	@Failure		400		{object}	error
 //	@Failure		404		{object}	error
 //	@Failure		500		{object}	error
@@ -295,7 +295,7 @@ func (app *application) updatePassword(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, "password updated successfully")
+	c.JSON(http.StatusCreated, "password updated successfully")
 }
 
 // GetuserById godoc

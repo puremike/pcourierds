@@ -1,11 +1,13 @@
 package main
 
 import (
+	"errors"
 	"net/http"
 	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/puremike/pcourierds/internal/models"
+	"github.com/puremike/pcourierds/internal/store"
 )
 
 type dispatcherApplyRequest struct {
@@ -16,7 +18,7 @@ type dispatcherApplyRequest struct {
 	DriverLicense      string `json:"driver_license" binding:"required"`
 }
 
-type dispatcherResponse struct {
+type dispatcherAppResponse struct {
 	ID                 string `json:"id"`
 	UserID             string `json:"user_id"`
 	VehicleType        string `json:"vehicle_type"`
@@ -28,6 +30,21 @@ type dispatcherResponse struct {
 	CreatedAt          string `json:"created_at"`
 }
 
+// type dispatcherResponse struct {
+// 	ID                 string    `json:"id"`
+// 	UserID             string    `json:"user_id"`
+// 	ApplicationID      string    `json:"application_id"`
+// 	VehicleType        string    `json:"vehicle_type"`
+// 	VehiclePlateNumber string    `json:"vehicle_plate_number"`
+// 	VehicleYear        int       `json:"vehicle_year"`
+// 	VehicleModel       string    `json:"vehicle_model"`
+// 	DriverLicense      string    `json:"driver_license"`
+// 	ApprovedAt         time.Time `json:"approved_at"`
+// 	IsActive           bool      `json:"isactive"`
+// 	Rating             float32   `json:"rating"`
+// 	CreatedAt          string    `json:"created_at"`
+// }
+
 // CreateDispatcherApplication godoc
 //
 //	@Summary		Create dispatcher application
@@ -36,7 +53,7 @@ type dispatcherResponse struct {
 //	@Accept			json
 //	@Produce		json
 //	@Param			payload	body		dispatcherApplyRequest	true	"Dispatcher Application payload"
-//	@Success		200		{object}	dispatcherResponse
+//	@Success		201		{object}	dispatcherAppResponse
 //	@Failure		400		{object}	error
 //	@Failure		404		{object}	error
 //	@Failure		500		{object}	error
@@ -62,6 +79,16 @@ func (app *application) dispatcherApply(c *gin.Context) {
 		return
 	}
 
+	existingApp, err := app.store.DispatcherApplications.GetApplicationByUserId(c.Request.Context(), authUser.ID)
+	if err != nil && !errors.Is(err, store.ErrDispatcherApplicationNotFound) {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to check existing application"})
+		return
+	}
+	if existingApp != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "user already has an application"})
+		return
+	}
+
 	apply := &models.DispatcherApplication{
 		UserID:             authUser.ID,
 		VehicleType:        payload.VehicleType,
@@ -79,7 +106,7 @@ func (app *application) dispatcherApply(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusCreated, dispatcherResponse{
+	c.JSON(http.StatusCreated, dispatcherAppResponse{
 		ID:                 submittedApplylication.ID,
 		UserID:             submittedApplylication.UserID,
 		VehicleType:        submittedApplylication.VehicleType,
@@ -99,17 +126,22 @@ func (app *application) dispatcherApply(c *gin.Context) {
 //	@Tags			DispatchersApply
 //	@Accept			json
 //	@Produce		json
-//	@Success		200	{object}	dispatcherResponse
+//	@Success		200	{object}	dispatcherAppResponse
 //	@Failure		400	{object}	error
 //	@Failure		404	{object}	error
 //	@Failure		500	{object}	error
 //	@Router			/admin/dispatcher-applications [get]
 //
-// @Security		BearerAuth
+//	@Security		BearerAuth
 func (app *application) getAllApplications(c *gin.Context) {
 
 	authUser := app.getUserFromContext(c)
 	if authUser == nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
+		return
+	}
+
+	if authUser.Role != "admin" {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
 		return
 	}
@@ -120,9 +152,9 @@ func (app *application) getAllApplications(c *gin.Context) {
 		return
 	}
 
-	var response []dispatcherResponse
+	var response []dispatcherAppResponse
 	for _, application := range *applications {
-		response = append(response, dispatcherResponse{
+		response = append(response, dispatcherAppResponse{
 			ID:                 application.ID,
 			UserID:             application.UserID,
 			VehicleType:        application.VehicleType,
@@ -146,17 +178,22 @@ func (app *application) getAllApplications(c *gin.Context) {
 //	@Accept			json
 //	@Produce		json
 //	@Param			id	path		string	true	"Dispatcher Application ID"
-//	@Success		200	{object}	dispatcherResponse
+//	@Success		200	{object}	dispatcherAppResponse
 //	@Failure		400	{object}	error
 //	@Failure		404	{object}	error
 //	@Failure		500	{object}	error
 //	@Router			/admin/dispatcher-applications/{id} [get]
 //
-// @Security		BearerAuth
+//	@Security		BearerAuth
 func (app *application) getDispatcherApplicationById(c *gin.Context) {
 
 	authUser := app.getUserFromContext(c)
 	if authUser == nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
+		return
+	}
+
+	if authUser.Role != "admin" {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
 		return
 	}
@@ -167,7 +204,7 @@ func (app *application) getDispatcherApplicationById(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, dispatcherResponse{
+	c.JSON(http.StatusOK, dispatcherAppResponse{
 		ID:                 dispatcherApp.ID,
 		UserID:             dispatcherApp.UserID,
 		VehicleType:        dispatcherApp.VehicleType,
@@ -178,4 +215,100 @@ func (app *application) getDispatcherApplicationById(c *gin.Context) {
 		Status:             dispatcherApp.Status,
 		CreatedAt:          dispatcherApp.CreatedAt.Format(time.RFC3339),
 	})
+}
+
+// ApproveOrDenyDispatcherApplication godoc
+//
+//	@Summary		Approve or Deny a dispatcher application
+//	@Description	Approve or Deny a dispatcher
+//	@Tags			DispatchersApply
+//	@Accept			json
+//	@Produce		json
+//	@Param			userID	path		string				true	"Dispatcher Application ID"
+//
+//	@Success		200		{object}	map[string]string	"success: application rejected"
+//	@Success		201		{object}	map[string]string	"success: application approved"
+//
+//	@Failure		400		{object}	error
+//	@Failure		404		{object}	error
+//	@Failure		500		{object}	error
+//	@Router			/admin/approve-dispatcher/{userID} [patch]
+//
+//	@Security		BearerAuth
+func (app *application) approveDenyApplication(c *gin.Context) {
+
+	authUser := app.getUserFromContext(c)
+	if authUser == nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
+		return
+	}
+
+	if authUser.Role != "admin" {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
+		return
+	}
+
+	dispatcherApp := app.getDispatcherAppByUserIdFromContext(c)
+	if dispatcherApp == nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "dispatcher application not found"})
+		return
+	}
+
+	// Check if application is already approved
+	if dispatcherApp.Status == "approved" {
+		c.JSON(http.StatusOK, gin.H{"message": "Dispatch Application Already Approved"})
+		return
+	}
+
+	// Reject application based on the following logic
+
+	if dispatcherApp.Status != "pending" || len(dispatcherApp.VehiclePlateNumber) != 8 || len(dispatcherApp.DriverLicense) != 12 || dispatcherApp.VehicleYear < 2008 {
+		if err := app.store.DispatcherApplications.DeleteApplicationByUserId(c.Request.Context(), dispatcherApp.UserID); err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to delete dispatcher application"})
+			return
+		}
+
+		c.JSON(http.StatusOK, gin.H{"message": "Dispatch Application Rejected"})
+		return
+	}
+
+	// Create and approve dispatch application
+	dispatcher := &models.Dispatcher{
+		UserID:             dispatcherApp.UserID,
+		ApplicationID:      dispatcherApp.ID,
+		VehicleType:        dispatcherApp.VehicleType,
+		VehiclePlateNumber: dispatcherApp.VehiclePlateNumber,
+		VehicleYear:        dispatcherApp.VehicleYear,
+		VehicleModel:       dispatcherApp.VehicleModel,
+		DriverLicense:      dispatcherApp.DriverLicense,
+		ApprovedAt:         time.Now(),
+		IsActive:           true,
+		Rating:             0,
+	}
+
+	if err := app.store.Dispatchers.CreateDispatcher(c.Request.Context(), dispatcher); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to create dispatcher"})
+		return
+	}
+
+	dispatcherApp.Status = "approved"
+
+	if err := app.store.DispatcherApplications.UpdateDispatchApplicationStatus(c.Request.Context(), dispatcherApp, dispatcherApp.ID); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to update dispatcher application"})
+		return
+	}
+
+	user, err := app.store.Users.GetUserById(c.Request.Context(), dispatcherApp.UserID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to retrieve user"})
+		return
+	}
+
+	user.Role = "dispatcher"
+	if err := app.store.Users.UpdateUserRole(c.Request.Context(), user, user.ID); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to update user"})
+		return
+	}
+
+	c.JSON(http.StatusCreated, "Your Dispatch Application has Been Approved")
 }

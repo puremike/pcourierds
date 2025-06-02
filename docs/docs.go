@@ -23,6 +23,67 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/admin/approve-dispatcher/{userID}": {
+            "patch": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Approve or Deny a dispatcher",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "DispatchersApply"
+                ],
+                "summary": "Approve or Deny a dispatcher application",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Dispatcher Application ID",
+                        "name": "userID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "success: application rejected",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "201": {
+                        "description": "success: application approved",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {}
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {}
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {}
+                    }
+                }
+            }
+        },
         "/admin/dispatcher-applications": {
             "get": {
                 "security": [
@@ -45,7 +106,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/main.dispatcherResponse"
+                            "$ref": "#/definitions/main.dispatcherAppResponse"
                         }
                     },
                     "400": {
@@ -94,7 +155,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/main.dispatcherResponse"
+                            "$ref": "#/definitions/main.dispatcherAppResponse"
                         }
                     },
                     "400": {
@@ -142,7 +203,7 @@ const docTemplate = `{
                     }
                 ],
                 "responses": {
-                    "200": {
+                    "201": {
                         "description": "password updated",
                         "schema": {
                             "type": "string"
@@ -280,8 +341,8 @@ const docTemplate = `{
                     }
                 ],
                 "responses": {
-                    "200": {
-                        "description": "OK",
+                    "201": {
+                        "description": "Created",
                         "schema": {
                             "$ref": "#/definitions/main.userResponse"
                         }
@@ -331,8 +392,8 @@ const docTemplate = `{
                     }
                 ],
                 "responses": {
-                    "200": {
-                        "description": "OK",
+                    "201": {
+                        "description": "Created",
                         "schema": {
                             "$ref": "#/definitions/main.userResponse"
                         }
@@ -382,10 +443,10 @@ const docTemplate = `{
                     }
                 ],
                 "responses": {
-                    "200": {
-                        "description": "OK",
+                    "201": {
+                        "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/main.dispatcherResponse"
+                            "$ref": "#/definitions/main.dispatcherAppResponse"
                         }
                     },
                     "400": {
@@ -544,38 +605,7 @@ const docTemplate = `{
                 }
             }
         },
-        "main.dispatcherApplyRequest": {
-            "type": "object",
-            "required": [
-                "driver_license",
-                "vehicle_model",
-                "vehicle_plate_number",
-                "vehicle_type",
-                "vehicle_year"
-            ],
-            "properties": {
-                "driver_license": {
-                    "type": "string"
-                },
-                "vehicle_model": {
-                    "type": "string"
-                },
-                "vehicle_plate_number": {
-                    "type": "string"
-                },
-                "vehicle_type": {
-                    "type": "string",
-                    "enum": [
-                        "car",
-                        "motorcycle"
-                    ]
-                },
-                "vehicle_year": {
-                    "type": "integer"
-                }
-            }
-        },
-        "main.dispatcherResponse": {
+        "main.dispatcherAppResponse": {
             "type": "object",
             "properties": {
                 "created_at": {
@@ -602,6 +632,37 @@ const docTemplate = `{
                 },
                 "vehicle_type": {
                     "type": "string"
+                },
+                "vehicle_year": {
+                    "type": "integer"
+                }
+            }
+        },
+        "main.dispatcherApplyRequest": {
+            "type": "object",
+            "required": [
+                "driver_license",
+                "vehicle_model",
+                "vehicle_plate_number",
+                "vehicle_type",
+                "vehicle_year"
+            ],
+            "properties": {
+                "driver_license": {
+                    "type": "string"
+                },
+                "vehicle_model": {
+                    "type": "string"
+                },
+                "vehicle_plate_number": {
+                    "type": "string"
+                },
+                "vehicle_type": {
+                    "type": "string",
+                    "enum": [
+                        "car",
+                        "motorcycle"
+                    ]
                 },
                 "vehicle_year": {
                     "type": "integer"

@@ -34,3 +34,18 @@ func (app *application) getDispatcherAppFromContext(c *gin.Context) *models.Disp
 
 	return dispatcherApp
 }
+
+func (app *application) getDispatcherAppByUserIdFromContext(c *gin.Context) *models.DispatcherApplication {
+
+	dispatcherAppByUserIdContext, exists := c.Get("dispatcherAppByUserId")
+	if !exists {
+		return &models.DispatcherApplication{}
+	}
+
+	dispatcherApp, ok := dispatcherAppByUserIdContext.(*models.DispatcherApplication)
+	if !ok {
+		return &models.DispatcherApplication{}
+	}
+
+	return dispatcherApp
+}

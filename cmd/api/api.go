@@ -37,6 +37,7 @@ func (app *application) routes() http.Handler {
 		authGroup.POST("/dispatchers/apply", app.dispatcherApply)
 		authGroup.GET("/admin/dispatcher-applications", app.authorizeRoles("admin"), app.getAllApplications)
 		authGroup.GET("/admin/dispatcher-applications/:id", app.authorizeRoles("admin"), app.getDispatcherAppMiddleware(), app.getDispatcherApplicationById)
+		authGroup.PATCH("/admin/approve-dispatcher/:userID", app.authorizeRoles("admin"), app.getDispatcherAppByUserIdMiddleware(), app.approveDenyApplication)
 	}
 
 	return g

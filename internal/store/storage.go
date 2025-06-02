@@ -16,20 +16,23 @@ type UsersRepository interface {
 	UpdateUser(ctx context.Context, user *models.User, id string) (*models.User, error)
 	UpdatePassword(ctx context.Context, user *models.User, id string) error
 	GetAllUsers(ctx context.Context) (*[]models.User, error)
+	UpdateUserRole(ctx context.Context, user *models.User, id string) error
 }
 
 type DispatchersApplyRepository interface {
 	DispatcherApplication(ctx context.Context, application *models.DispatcherApplication) (*models.DispatcherApplication, error)
 	GetAllApplications(ctx context.Context) (*[]models.DispatcherApplication, error)
 	GetApplicationById(ctx context.Context, id string) (*models.DispatcherApplication, error)
+	GetApplicationByUserId(ctx context.Context, userId string) (*models.DispatcherApplication, error)
+	DeleteApplicationByUserId(ctx context.Context, userId string) error
+	UpdateDispatchApplicationStatus(ctx context.Context, dispatch *models.DispatcherApplication, id string) error
 }
 
 type DispatchersRepository interface {
-	CreateDispatcher(dispatcher *models.Dispatcher) error
+	CreateDispatcher(ctx context.Context, dispatcher *models.Dispatcher) error
 }
 
 type PackagesRepository interface {
-	CreatePackage(pack *models.Package) error
 }
 
 type Storage struct {

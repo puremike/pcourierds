@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/base64"
 	"errors"
+	"fmt"
 	"net/http"
 	"strings"
 
@@ -146,6 +147,31 @@ func (app *application) getDispatcherAppMiddleware() gin.HandlerFunc {
 		}
 
 		c.Set("dispatcherApp", dispatchApps)
+		c.Next()
+	}
+}
+
+func (app *application) getDispatcherAppByUserIdMiddleware() gin.HandlerFunc {
+	return func(c *gin.Context) {
+
+		id := c.Param("userID")
+
+		fmt.Println("id: ", id)
+
+		dispatchApp, err := app.store.DispatcherApplications.GetApplicationByUserId(c.Request.Context(), id)
+
+		if err != nil {
+			if errors.Is(err, store.ErrDispatcherApplicationNotFound) {
+				c.JSON(http.StatusNotFound, gin.H{"error": "dispatcher applicationzsd not found"})
+				c.Abort()
+				return
+			}
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to retrieve dispatcher application"})
+			c.Abort()
+			return
+		}
+
+		c.Set("dispatcherAppByUserId", dispatchApp)
 		c.Next()
 	}
 }

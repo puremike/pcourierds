@@ -46,8 +46,8 @@ type Dispatcher struct {
 	VehicleModel       string    `json:"vehicle_model"`
 	DriverLicense      string    `json:"driver_license"`
 	ApprovedAt         time.Time `json:"approved_at"`
-	IsActive           bool      `json:"is_active"` // Indicates if currently working
-	Rating             float32   `json:"rating"`    // optional
+	IsActive           bool      `json:"isActive"` // Indicates if currently working
+	Rating             float32   `json:"rating"`   // optional
 	CreatedAt          time.Time `json:"created_at"`
 	UpdatedAt          time.Time `json:"updated_at"`
 }
