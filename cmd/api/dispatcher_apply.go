@@ -9,18 +9,23 @@ import (
 )
 
 type dispatcherApplyRequest struct {
-	Vehicle string `json:"vehicle" binding:"required"`
-	License string `json:"license" binding:"required"`
-	// Status  string `json:"status" binding:"required,oneof=pending approved rejected"`
+	VehicleType        string `json:"vehicle_type" binding:"required,oneof=car motorcycle"`
+	VehiclePlateNumber string `json:"vehicle_plate_number" binding:"required"`
+	VehicleYear        int    `json:"vehicle_year" binding:"required"`
+	VehicleModel       string `json:"vehicle_model" binding:"required"`
+	DriverLicense      string `json:"driver_license" binding:"required"`
 }
 
 type dispatcherResponse struct {
-	ID        string `json:"id"`
-	UserID    string `json:"user_id"`
-	Vehicle   string `json:"vehicle"`
-	License   string `json:"license"`
-	Status    string `json:"status"`
-	CreatedAt string `json:"created_at"`
+	ID                 string `json:"id"`
+	UserID             string `json:"user_id"`
+	VehicleType        string `json:"vehicle_type"`
+	VehiclePlateNumber string `json:"vehicle_plate_number"`
+	VehicleYear        int    `json:"vehicle_year"`
+	VehicleModel       string `json:"vehicle_model"`
+	DriverLicense      string `json:"driver_license"`
+	Status             string `json:"status"` // pending, approved, rejected
+	CreatedAt          string `json:"created_at"`
 }
 
 // CreateDispatcherApplication godoc
@@ -58,13 +63,16 @@ func (app *application) dispatcherApply(c *gin.Context) {
 	}
 
 	apply := &models.DispatcherApplication{
-		UserID:  authUser.ID,
-		Vehicle: payload.Vehicle,
-		License: payload.License,
-		Status:  "pending",
+		UserID:             authUser.ID,
+		VehicleType:        payload.VehicleType,
+		VehiclePlateNumber: payload.VehiclePlateNumber,
+		VehicleYear:        payload.VehicleYear,
+		VehicleModel:       payload.VehicleModel,
+		DriverLicense:      payload.DriverLicense,
+		Status:             "pending",
 	}
 
-	applyApp, err := app.store.DispatcherApplications.DispatcherApplication(c.Request.Context(), apply)
+	submittedApplylication, err := app.store.DispatcherApplications.DispatcherApplication(c.Request.Context(), apply)
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "unable to create dispatcher application"})
@@ -72,12 +80,15 @@ func (app *application) dispatcherApply(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusCreated, dispatcherResponse{
-		ID:        applyApp.ID,
-		UserID:    applyApp.UserID,
-		Vehicle:   applyApp.Vehicle,
-		License:   applyApp.License,
-		Status:    applyApp.Status,
-		CreatedAt: applyApp.CreatedAt.Format(time.RFC3339),
+		ID:                 submittedApplylication.ID,
+		UserID:             submittedApplylication.UserID,
+		VehicleType:        submittedApplylication.VehicleType,
+		VehiclePlateNumber: submittedApplylication.VehiclePlateNumber,
+		VehicleYear:        submittedApplylication.VehicleYear,
+		VehicleModel:       submittedApplylication.VehicleModel,
+		DriverLicense:      submittedApplylication.DriverLicense,
+		Status:             submittedApplylication.Status,
+		CreatedAt:          submittedApplylication.CreatedAt.Format(time.RFC3339),
 	})
 }
 
@@ -112,12 +123,15 @@ func (app *application) getAllApplications(c *gin.Context) {
 	var response []dispatcherResponse
 	for _, application := range *applications {
 		response = append(response, dispatcherResponse{
-			ID:        application.ID,
-			UserID:    application.UserID,
-			Vehicle:   application.Vehicle,
-			License:   application.License,
-			Status:    application.Status,
-			CreatedAt: application.CreatedAt.Format(time.RFC3339),
+			ID:                 application.ID,
+			UserID:             application.UserID,
+			VehicleType:        application.VehicleType,
+			VehiclePlateNumber: application.VehiclePlateNumber,
+			VehicleYear:        application.VehicleYear,
+			VehicleModel:       application.VehicleModel,
+			DriverLicense:      application.DriverLicense,
+			Status:             application.Status,
+			CreatedAt:          application.CreatedAt.Format(time.RFC3339),
 		})
 	}
 
@@ -154,11 +168,14 @@ func (app *application) getDispatcherApplicationById(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, dispatcherResponse{
-		ID:        dispatcherApp.ID,
-		UserID:    dispatcherApp.UserID,
-		Vehicle:   dispatcherApp.Vehicle,
-		License:   dispatcherApp.License,
-		Status:    dispatcherApp.Status,
-		CreatedAt: dispatcherApp.CreatedAt.Format(time.RFC3339),
+		ID:                 dispatcherApp.ID,
+		UserID:             dispatcherApp.UserID,
+		VehicleType:        dispatcherApp.VehicleType,
+		VehiclePlateNumber: dispatcherApp.VehiclePlateNumber,
+		VehicleYear:        dispatcherApp.VehicleYear,
+		VehicleModel:       dispatcherApp.VehicleModel,
+		DriverLicense:      dispatcherApp.DriverLicense,
+		Status:             dispatcherApp.Status,
+		CreatedAt:          dispatcherApp.CreatedAt.Format(time.RFC3339),
 	})
 }

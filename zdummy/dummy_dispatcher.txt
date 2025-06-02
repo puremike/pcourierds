@@ -1,0 +1,9 @@
+{
+  "license": "ABC-1234",
+  "vehicle": "Toyota Camry 2021"
+}
+
+{
+  "license": "TXR-9876",
+  "vehicle": "Honda Civic LX"
+}

@@ -24,24 +24,30 @@ type Package struct {
 }
 
 type DispatcherApplication struct {
-	ID        string    `json:"id"`
-	UserID    string    `json:"user_id"`
-	Vehicle   string    `json:"vehicle"`
-	License   string    `json:"license"`
-	Status    string    `json:"status"` // pending, approved, rejected
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
+	ID                 string    `json:"id"`
+	UserID             string    `json:"user_id"`
+	VehicleType        string    `json:"vehicle_type"`
+	VehiclePlateNumber string    `json:"vehicle_plate_number"`
+	VehicleYear        int       `json:"vehicle_year"`
+	VehicleModel       string    `json:"vehicle_model"`
+	DriverLicense      string    `json:"driver_license"`
+	Status             string    `json:"status"` // pending, approved, rejected
+	CreatedAt          time.Time `json:"created_at"`
+	UpdatedAt          time.Time `json:"updated_at"`
 }
 
 type Dispatcher struct {
-	ID            string    `json:"id"`
-	UserID        string    `json:"user_id"`
-	ApplicationID string    `json:"application_id"`
-	Vehicle       string    `json:"vehicle"`
-	License       string    `json:"license"`
-	ApprovedAt    time.Time `json:"approved_at"`
-	IsActive      bool      `json:"is_active"` // Indicates if currently working
-	Rating        float32   `json:"rating"`    // optional
-	CreatedAt     time.Time `json:"created_at"`
-	UpdatedAt     time.Time `json:"updated_at"`
+	ID                 string    `json:"id"`
+	UserID             string    `json:"user_id"`
+	ApplicationID      string    `json:"application_id"`
+	VehicleType        string    `json:"vehicle_type"`
+	VehiclePlateNumber string    `json:"vehicle_plate_number"`
+	VehicleYear        int       `json:"vehicle_year"`
+	VehicleModel       string    `json:"vehicle_model"`
+	DriverLicense      string    `json:"driver_license"`
+	ApprovedAt         time.Time `json:"approved_at"`
+	IsActive           bool      `json:"is_active"` // Indicates if currently working
+	Rating             float32   `json:"rating"`    // optional
+	CreatedAt          time.Time `json:"created_at"`
+	UpdatedAt          time.Time `json:"updated_at"`
 }

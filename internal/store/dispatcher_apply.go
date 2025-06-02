@@ -15,7 +15,7 @@ func (d *DispatcherApplyStore) DispatcherApplication(ctx context.Context, applic
 	ctx, cancel := context.WithTimeout(ctx, QueryBackgroundTimeout)
 	defer cancel()
 
-	query := `INSERT INTO dispatchers_apply (user_id, vehicle, license, status) VALUES ($1, $2, $3, $4) RETURNING id, user_id, vehicle, license, status, created_at`
+	query := `INSERT INTO dispatchers_apply (user_id, vehicle_type, vehichle_plate_number, vehicle_year, vehicle_model, driver_license, status) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id, user_id, vehicle_type, vehichle_plate_number, vehicle_year, vehicle_model, driver_license, status, created_at`
 
 	tx, err := d.db.BeginTx(ctx, nil)
 	if err != nil {
@@ -24,7 +24,7 @@ func (d *DispatcherApplyStore) DispatcherApplication(ctx context.Context, applic
 
 	defer tx.Rollback()
 
-	if err = tx.QueryRowContext(ctx, query, application.UserID, application.Vehicle, application.License, application.Status).Scan(&application.ID, &application.UserID, &application.Vehicle, &application.License, &application.Status, &application.CreatedAt); err != nil {
+	if err = tx.QueryRowContext(ctx, query, application.UserID, application.VehicleType, application.VehiclePlateNumber, application.VehicleYear, application.VehicleModel, application.DriverLicense, application.Status).Scan(&application.ID, &application.UserID, &application.VehicleType, &application.VehiclePlateNumber, &application.VehicleYear, &application.VehicleModel, &application.DriverLicense, &application.Status, &application.CreatedAt); err != nil {
 		return nil, err
 	}
 
@@ -40,7 +40,7 @@ func (d *DispatcherApplyStore) GetAllApplications(ctx context.Context) (*[]model
 	ctx, cancel := context.WithTimeout(ctx, QueryBackgroundTimeout)
 	defer cancel()
 
-	query := `SELECT id, user_id, vehicle, license, status, created_at FROM dispatchers_apply`
+	query := `SELECT id, user_id, vehicle_type, vehichle_plate_number, vehicle_year, vehicle_model, driver_license, status, created_at FROM dispatchers_apply`
 
 	var dispatchersApp []models.DispatcherApplication
 
@@ -51,7 +51,7 @@ func (d *DispatcherApplyStore) GetAllApplications(ctx context.Context) (*[]model
 	defer rows.Close()
 	for rows.Next() {
 		var d models.DispatcherApplication
-		if err = rows.Scan(&d.ID, &d.UserID, &d.Vehicle, &d.License, &d.Status, &d.CreatedAt); err != nil {
+		if err = rows.Scan(&d.ID, &d.UserID, &d.VehicleType, &d.VehiclePlateNumber, &d.VehicleYear, &d.VehicleModel, &d.DriverLicense, &d.Status, &d.CreatedAt); err != nil {
 			return nil, err
 		}
 
@@ -71,9 +71,9 @@ func (d *DispatcherApplyStore) GetApplicationById(ctx context.Context, id string
 
 	dispatcherApp := &models.DispatcherApplication{}
 
-	query := `SELECT id, user_id, vehicle, license, status, created_at FROM dispatchers_apply WHERE id = $1`
+	query := `SELECT id, user_id, vehicle_type, vehichle_plate_number, vehicle_year, vehicle_model, driver_license, status, created_at FROM dispatchers_apply WHERE id = $1`
 
-	if err := d.db.QueryRowContext(ctx, query, id).Scan(&dispatcherApp.ID, &dispatcherApp.UserID, &dispatcherApp.Vehicle, &dispatcherApp.License, &dispatcherApp.Status, &dispatcherApp.CreatedAt); err != nil {
+	if err := d.db.QueryRowContext(ctx, query, id).Scan(&dispatcherApp.ID, &dispatcherApp.UserID, &dispatcherApp.VehicleType, &dispatcherApp.VehiclePlateNumber, &dispatcherApp.VehicleYear, &dispatcherApp.VehicleModel, &dispatcherApp.DriverLicense, &dispatcherApp.Status, &dispatcherApp.CreatedAt); err != nil {
 		if err == sql.ErrNoRows {
 			return nil, ErrDispatcherApplicationNotFound
 		}

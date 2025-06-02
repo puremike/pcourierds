@@ -547,15 +547,31 @@ const docTemplate = `{
         "main.dispatcherApplyRequest": {
             "type": "object",
             "required": [
-                "license",
-                "vehicle"
+                "driver_license",
+                "vehicle_model",
+                "vehicle_plate_number",
+                "vehicle_type",
+                "vehicle_year"
             ],
             "properties": {
-                "license": {
+                "driver_license": {
                     "type": "string"
                 },
-                "vehicle": {
+                "vehicle_model": {
                     "type": "string"
+                },
+                "vehicle_plate_number": {
+                    "type": "string"
+                },
+                "vehicle_type": {
+                    "type": "string",
+                    "enum": [
+                        "car",
+                        "motorcycle"
+                    ]
+                },
+                "vehicle_year": {
+                    "type": "integer"
                 }
             }
         },
@@ -565,20 +581,30 @@ const docTemplate = `{
                 "created_at": {
                     "type": "string"
                 },
+                "driver_license": {
+                    "type": "string"
+                },
                 "id": {
                     "type": "string"
                 },
-                "license": {
-                    "type": "string"
-                },
                 "status": {
+                    "description": "pending, approved, rejected",
                     "type": "string"
                 },
                 "user_id": {
                     "type": "string"
                 },
-                "vehicle": {
+                "vehicle_model": {
                     "type": "string"
+                },
+                "vehicle_plate_number": {
+                    "type": "string"
+                },
+                "vehicle_type": {
+                    "type": "string"
+                },
+                "vehicle_year": {
+                    "type": "integer"
                 }
             }
         },

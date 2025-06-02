@@ -1,0 +1,85 @@
+[
+    {
+        "vehicle_type": "car",
+        "vehicle_plate_number": "LAG123AB",
+        "vehicle_year": 2015,
+        "vehicle_model": "Toyota Corolla",
+        "driver_license": "LAG123456789"
+    },
+    {
+        "vehicle_type": "motorcycle",
+        "vehicle_plate_number": "ABJ456CD",
+        "vehicle_year": 2020,
+        "vehicle_model": "Yamaha MT-07",
+        "driver_license": "FCT987654321"
+    },
+    {
+        "vehicle_type": "car",
+        "vehicle_plate_number": "KAN789EF",
+        "vehicle_year": 2018,
+        "vehicle_model": "Honda Accord",
+        "driver_license": "KAN456789123"
+    },
+    {
+        "vehicle_type": "motorcycle",
+        "vehicle_plate_number": "OGN234GH",
+        "vehicle_year": 2022,
+        "vehicle_model": "Kawasaki Ninja",
+        "driver_license": "OGN234567890"
+    },
+    {
+        "vehicle_type": "car",
+        "vehicle_plate_number": "ENU567JK",
+        "vehicle_year": 2010,
+        "vehicle_model": "Hyundai Elantra",
+        "driver_license": "ENU345678901"
+    },
+    {
+        "vehicle_type": "motorcycle",
+        "vehicle_plate_number": "RIV890LM",
+        "vehicle_year": 2019,
+        "vehicle_model": "Suzuki GSX",
+        "driver_license": "RIV567890123"
+    },
+    {
+        "vehicle_type": "car",
+        "vehicle_plate_number": "OYO123NP",
+        "vehicle_year": 2017,
+        "vehicle_model": "Nissan Altima",
+        "driver_license": "OYO678901234"
+    },
+    {
+        "vehicle_type": "motorcycle",
+        "vehicle_plate_number": "DEL456QR",
+        "vehicle_year": 2021,
+        "vehicle_model": "Honda CBR",
+        "driver_license": "DEL789012345"
+    },
+    {
+        "vehicle_type": "car",
+        "vehicle_plate_number": "LOS789ST",
+        "vehicle_year": 2013,
+        "vehicle_model": "Kia Optima",
+        "driver_license": "LOS890123456"
+    },
+    {
+        "vehicle_type": "motorcycle",
+        "vehicle_plate_number": "EKO012UV",
+        "vehicle_year": 2023,
+        "vehicle_model": "BMW S1000RR",
+        "driver_license": "EKO901234567"
+    }
+]
+
+
+Additional Notes:
+
+How to check constraints on PostgreSQL:
+
+```SELECT 
+    conname AS constraint_name,
+    conrelid::regclass AS table_name,
+    pg_get_constraintdef(oid) AS constraint_definition
+FROM pg_constraint
+WHERE contype = 'c' AND conrelid IN ('dispatchers'::regclass, 'dispatchers_apply'::regclass)
+ORDER BY table_name, conname;```
