@@ -33,7 +33,9 @@ type loginRequest struct {
 }
 
 type loginResponse struct {
-	Token string `json:"token"`
+	ID       string `json:"id"`
+	Username string `json:"username"`
+	Token    string `json:"token"`
 }
 
 type userProfileUpdateRequest struct {
@@ -152,9 +154,11 @@ func (app *application) login(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, loginResponse{
-		Token: token,
-	})
+	c.SetCookie("jwt", token, int(app.config.authConfig.tokenExp.Seconds()), "/", "localhost", false, true)
+	c.SetSameSite(http.SameSiteLaxMode)
+
+	res := loginResponse{ID: user.ID, Username: user.Username}
+	c.JSON(http.StatusOK, res)
 }
 
 // GetLoggedUserProfile godoc
@@ -172,7 +176,11 @@ func (app *application) login(c *gin.Context) {
 //
 //	@Security		BearerAuth
 func (app *application) userProfile(c *gin.Context) {
-	user := app.getUserFromContext(c)
+	user, err := app.getUserFromContext(c)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
+		return
+	}
 
 	c.JSON(http.StatusOK, userResponse{
 		ID:        user.ID,
@@ -206,7 +214,11 @@ func (app *application) updateProfile(c *gin.Context) {
 		return
 	}
 
-	authUser := app.getUserFromContext(c)
+	authUser, err := app.getUserFromContext(c)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
+		return
+	}
 
 	user := &models.User{
 		Role: "user",
@@ -263,7 +275,11 @@ func (app *application) updatePassword(c *gin.Context) {
 		return
 	}
 
-	authUser := app.getUserFromContext(c)
+	authUser, err := app.getUserFromContext(c)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
+		return
+	}
 
 	if err := bcrypt.CompareHashAndPassword([]byte(authUser.Password), []byte(payload.OldPassword)); err != nil {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "invalid password"})

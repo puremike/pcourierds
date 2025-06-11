@@ -67,7 +67,11 @@ func (app *application) dispatcherApply(c *gin.Context) {
 		return
 	}
 
-	authUser := app.getUserFromContext(c)
+	authUser, err := app.getUserFromContext(c)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
+		return
+	}
 
 	if authUser.Role == "admin" {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "only users can create applications"})
@@ -130,7 +134,11 @@ func (app *application) dispatcherApply(c *gin.Context) {
 //	@Security		BearerAuth
 func (app *application) getAllApplications(c *gin.Context) {
 
-	authUser := app.getUserFromContext(c)
+	authUser, err := app.getUserFromContext(c)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
+		return
+	}
 
 	if authUser.Role != "admin" {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
@@ -178,15 +186,19 @@ func (app *application) getAllApplications(c *gin.Context) {
 //	@Security		BearerAuth
 func (app *application) getDispatcherApplicationById(c *gin.Context) {
 
-	authUser := app.getUserFromContext(c)
+	authUser, err := app.getUserFromContext(c)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
+		return
+	}
 
 	if authUser.Role != "admin" {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
 		return
 	}
 
-	dispatcherApp := app.getDispatcherAppFromContext(c)
-	if dispatcherApp == nil {
+	dispatcherApp, err := app.getDispatcherAppFromContext(c)
+	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "dispatcher application not found"})
 		return
 	}
@@ -224,15 +236,19 @@ func (app *application) getDispatcherApplicationById(c *gin.Context) {
 //	@Security		BearerAuth
 func (app *application) approveDenyApplication(c *gin.Context) {
 
-	authUser := app.getUserFromContext(c)
+	authUser, err := app.getUserFromContext(c)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
+		return
+	}
 
 	if authUser.Role != "admin" {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
 		return
 	}
 
-	dispatcherApp := app.getDispatcherAppByUserIdFromContext(c)
-	if dispatcherApp == nil {
+	dispatcherApp, err := app.getDispatcherAppByUserIdFromContext(c)
+	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "dispatcher application not found"})
 		return
 	}

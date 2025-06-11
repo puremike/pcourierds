@@ -78,7 +78,7 @@ func main() {
 			aud:    env.GetEnvString("JWT_AUD", "pcourierds"),
 			tokenExp: env.GetEnvTDuration(
 				"JWT_TOKEN_EXP",
-				72*time.Hour,
+				30*time.Minute,
 			),
 		},
 		basicAuthConfig: basicAuthConfig{

@@ -87,7 +87,11 @@ func (app *application) adminUpdateProfile(c *gin.Context) {
 		return
 	}
 
-	authUser := app.getUserFromContext(c)
+	authUser, err := app.getUserFromContext(c)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
+		return
+	}
 
 	if authUser.Role != "admin" {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
@@ -150,7 +154,11 @@ func (app *application) adminUpdateProfile(c *gin.Context) {
 //	@Security		BearerAuth
 func (app *application) getUserById(c *gin.Context) {
 
-	authUser := app.getUserFromContext(c)
+	authUser, err := app.getUserFromContext(c)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
+		return
+	}
 
 	if authUser.Role != "admin" {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
@@ -189,7 +197,11 @@ func (app *application) getUserById(c *gin.Context) {
 //	@Security		BearerAuth
 func (app *application) getUsers(c *gin.Context) {
 
-	authUser := app.getUserFromContext(c)
+	authUser, err := app.getUserFromContext(c)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
+		return
+	}
 
 	if authUser.Role != "admin" {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
@@ -233,7 +245,11 @@ func (app *application) getUsers(c *gin.Context) {
 //	@Security		BearerAuth
 func (app *application) adminDeleteUser(c *gin.Context) {
 
-	authUser := app.getUserFromContext(c)
+	authUser, err := app.getUserFromContext(c)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
+		return
+	}
 
 	if authUser.Role != "admin" {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})

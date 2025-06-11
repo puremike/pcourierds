@@ -117,7 +117,11 @@ func (app *application) authMiddleware() gin.HandlerFunc {
 
 func (app *application) authorizeRoles(allowedRoles ...string) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		user := app.getUserFromContext(c)
+		user, err := app.getUserFromContext(c)
+		if err != nil {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
+			return
+		}
 
 		if slices.Contains(allowedRoles, user.Role) {
 			c.Next()
